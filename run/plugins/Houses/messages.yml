@@ -1,0 +1,50 @@
+# Wrong command usage
+wrongUsage:
+  invalidUsage: "&4Wrong command usage &8>> &7{COMMAND}."
+  invalidUsageHeader: "&cWrong command usage!"
+  invalidUsageEntry: "&8 >> &7"
+  noPermission: "&4You don't have permission to perform this command."
+  cantFindPlayer: "&4Can not find that player!"
+  onlyForPlayer: "&4Command only for players!"
+
+# Sekcja domów
+house:
+  cantCreateRegions: "&cNie udało się stworzyć regionów!"
+  createdBothRegions: "&aStworzono regiony!"
+  createdHouse: "&aStworzono dom o id &e{HOUSE_ID}&a!"
+  houseAlreadyExists: "&cDom o takim id &4({HOUSE_ID})&c już istnieje!"
+  createdInvite: "&aKliknij na gracza, by dodać go do domu."
+  inviteExpired: "&cZaproszenie wygasło!"
+  playerAddedToHouse: "&aGracz &e{PLAYER}&a potwierdził twoje zaproszenie - został on dodany do domu!"
+  joinedHouse: "&aDołączono do domu gracza &e{INVITER}&a!"
+  requiredRentalTime: "&cCzas wynajmu nie może być niż {MIN_RENT_TIME}!"
+  rentedHouse: "&aWynajęto dom na &e{DAYS} &adni!"
+  playerCancelledInvitation: "&cGracz &4{PLAYER}&c, odrzucił twoje zaproszenie do domu!"
+  cancelledInvitation: "&cOdrzucono zaproszenie do domu od gracza &4{INVITER}&c!"
+  playerRemovedFromHouse: "&aGracz został usunięty z domu!"
+  removedFromHouseSubject: "Usunięto z domu!"
+  removedFromHouseMessage: "Zostałeś usunięty z domu gracza {OWNER}!"
+  addedCoOwner: "&aMianowałeś gracza &e{PLAYER}&a współwłaścicielem!"
+  addedCoOwnerSubject: "Zostałeś współwłaścicielem!"
+  addedCoOwnerMessage: "Zostałeś współwłaścicielem domu gracza {OWNER}!"
+  removedCoOwner: "&cUsunięto gracza &4{PLAYER}&c z współwłaścicieli!"
+  removedCoOwnerSubject: "Usunięto współwłaściciela!"
+  removedCoOwnerMessage: "Zostałeś usunięty z współwłaścicieli domu gracza {OWNER}!"
+  changedPermission: "&aZmieniono uprawnienia gracza &e{PLAYER}&a!"
+  changedPermissionSubject: "Zmiana uprawnień!"
+  changedPermissionMessage: "Zmieniono twoje uprawnienia w domu gracza {OWNER}!"
+  permissionToOpenDoors: "&cNie masz uprawnień do otwierania drzwi w tym domu!"
+  permissionToOpenChests: "&cNie masz uprawnień do otwierania skrzyń w tym domu!"
+  permissionToPlaceFurniture: "&cNie masz uprawnień do stawiania mebli w tym domu!"
+
+# Sekcja wynajmu
+rent:
+  rentEndSoon: "&cTwój wynajem kończy się za &4{DAYS}&c dni!"
+
+# Sekcja alertów
+alert:
+  alertMessage:
+    - "&8&l--&c&lAlert&8&l--"
+    - "&cTemat: &e{SUBJECT}"
+    - "&cWiadomość: &e{MESSAGE}"
+    - " "

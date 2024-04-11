@@ -1,0 +1,10 @@
+name: Houses
+version: 1.0-SNAPSHOT
+main: com.eripe14.houses.HousesPlugin
+author: eripe14
+depend:
+ - FastAsyncWorldEdit
+ - WorldGuard
+ - ItemsAdder
+prefix: Houses
+api-version: 1.13

@@ -1,0 +1,313 @@
+[19:45:54] [ServerMain/INFO]: Building unoptimized datafixer
+[19:45:55] [ServerMain/INFO]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
+[19:45:56] [ServerMain/INFO]: Loaded 7 recipes
+[19:45:57] [Server thread/INFO]: Starting minecraft server version 1.19.3
+[19:45:57] [Server thread/INFO]: Loading properties
+[19:45:57] [Server thread/INFO]: This server is running Paper version git-Paper-448 (MC: 1.19.3) (Implementing API version 1.19.3-R0.1-SNAPSHOT) (Git: 155aa36)
+[19:45:57] [Server thread/INFO]: Server Ping Player Sample Count: 12
+[19:45:57] [Server thread/INFO]: Using 4 threads for Netty based IO
+[19:45:57] [Server thread/INFO]: [ChunkTaskScheduler] Chunk system is using 1 I/O threads, 4 worker threads, and gen parallelism of 4 threads
+[19:45:57] [Server thread/INFO]: Default game type: SURVIVAL
+[19:45:57] [Server thread/INFO]: Generating keypair
+[19:45:57] [Server thread/INFO]: Starting Minecraft server on *:25565
+[19:45:57] [Server thread/INFO]: Using default channel type
+[19:45:57] [Server thread/INFO]: Paper: Using Java compression from Velocity.
+[19:45:57] [Server thread/INFO]: Paper: Using Java cipher from Velocity.
+[19:45:57] [Server thread/INFO]: [FastAsyncWorldEdit] Loading server plugin FastAsyncWorldEdit v2.6.4-SNAPSHOT-478;dae6c69
+[19:45:58] [Server thread/INFO]: Got request to register class com.sk89q.worldedit.bukkit.BukkitServerInterface with WorldEdit [com.sk89q.worldedit.extension.platform.PlatformManager@723e896b]
+[19:45:58] [Server thread/INFO]: [WorldGuard] Loading server plugin WorldGuard v7.0.8+33cdb4a
+[19:45:58] [Server thread/INFO]: [ProtocolLib] Loading server plugin ProtocolLib v5.1.0
+[19:45:59] [Server thread/INFO]: [LoneLibs] Loading server plugin LoneLibs v1.0.45
+[19:45:59] [Server thread/INFO]: [ItemsAdder] Loading server plugin ItemsAdder v3.3.1
+[19:45:59] [Server thread/INFO]: [Houses] Loading server plugin Houses v1.0-SNAPSHOT
+[19:45:59] [Server thread/INFO]: Server permissions file permissions.yml is empty, ignoring it
+[19:45:59] [Server thread/INFO]: [FastAsyncWorldEdit] Enabling FastAsyncWorldEdit v2.6.4-SNAPSHOT-478;dae6c69
+[19:45:59] [Server thread/INFO]: [com.fastasyncworldedit.core.Fawe] LZ4 Compression Binding loaded successfully
+[19:45:59] [Server thread/INFO]: [com.fastasyncworldedit.core.Fawe] ZSTD Compression Binding loaded successfully
+[19:45:59] [Server thread/INFO]: Registering commands with com.sk89q.worldedit.bukkit.BukkitServerInterface
+[19:45:59] [Server thread/INFO]: WEPIF: Using the Bukkit Permissions API.
+[19:45:59] [Server thread/INFO]: Using com.sk89q.worldedit.bukkit.adapter.impl.fawe.v1_19_R2.PaperweightFaweAdapter as the Bukkit adapter
+[19:46:00] [Server thread/WARN]: [com.fastasyncworldedit.core.util.UpdateNotification] An update for FastAsyncWorldEdit is available. You are 247 build(s) out of date.
+You are running build 478, the latest version is build 725.
+Update at https://www.spigotmc.org/resources/13932/
+[19:46:00] [Server thread/INFO]: [ProtocolLib] Enabling ProtocolLib v5.1.0
+[19:46:00] [Server thread/INFO]: [LoneLibs] Enabling LoneLibs v1.0.45
+[19:46:00] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[19:46:00] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
+[19:46:00] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[19:46:00] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
+[19:46:00] [Server thread/INFO]: Preparing level "world"
+[19:46:00] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+[19:46:00] [Server thread/INFO]: Time elapsed: 74 ms
+[19:46:00] [Server thread/INFO]: Preparing start region for dimension minecraft:the_nether
+[19:46:00] [Server thread/INFO]: Time elapsed: 19 ms
+[19:46:00] [Server thread/INFO]: Preparing start region for dimension minecraft:the_end
+[19:46:00] [Server thread/INFO]: Time elapsed: 16 ms
+[19:46:00] [Server thread/INFO]: [WorldGuard] Enabling WorldGuard v7.0.8+33cdb4a
+[19:46:00] [Server thread/INFO]: [WorldGuard] (world) TNT ignition is PERMITTED.
+[19:46:00] [Server thread/INFO]: [WorldGuard] (world) Lighters are PERMITTED.
+[19:46:00] [Server thread/INFO]: [WorldGuard] (world) Lava fire is PERMITTED.
+[19:46:00] [Server thread/INFO]: [WorldGuard] (world) Fire spread is UNRESTRICTED.
+[19:46:01] [Server thread/INFO]: [WorldGuard] Loaded configuration for world 'world'
+[19:46:01] [Server thread/INFO]: [WorldGuard] (world_nether) TNT ignition is PERMITTED.
+[19:46:01] [Server thread/INFO]: [WorldGuard] (world_nether) Lighters are PERMITTED.
+[19:46:01] [Server thread/INFO]: [WorldGuard] (world_nether) Lava fire is PERMITTED.
+[19:46:01] [Server thread/INFO]: [WorldGuard] (world_nether) Fire spread is UNRESTRICTED.
+[19:46:01] [Server thread/INFO]: [WorldGuard] Loaded configuration for world 'world_nether'
+[19:46:01] [Server thread/INFO]: [WorldGuard] (world_the_end) TNT ignition is PERMITTED.
+[19:46:01] [Server thread/INFO]: [WorldGuard] (world_the_end) Lighters are PERMITTED.
+[19:46:01] [Server thread/INFO]: [WorldGuard] (world_the_end) Lava fire is PERMITTED.
+[19:46:01] [Server thread/INFO]: [WorldGuard] (world_the_end) Fire spread is UNRESTRICTED.
+[19:46:01] [Server thread/INFO]: [WorldGuard] Loaded configuration for world 'world_the_end'
+[19:46:01] [Server thread/INFO]: [WorldGuard] Loading region data...
+[19:46:01] [Server thread/INFO]: [ItemsAdder] Enabling ItemsAdder v3.3.1
+[19:46:01] [Server thread/INFO]: [NBTAPI] [NBTAPI] Found Spigot: v1_19_R2! Trying to find NMS support
+[19:46:01] [Server thread/INFO]: [NBTAPI] [NBTAPI] NMS support 'MC1_19_R2' loaded!
+[19:46:01] [Server thread/INFO]: [ItemsAdder] [m[0;36;1m
+[0;36;1m  ___  ___        __        __   __   ___  __  [0;32;22m    ItemsAdder[0;37;22m 3.3.1
+[0;36;1m|  |  |__   |\/| /__`  /\  |  \ |  \ |__  |__) [0;32;22m    LoneLibs[0;37;22m 1.0.45
+[0;36;1m|  |  |___  |  | .__/ /--\ |__/ |__/ |___ |  \ [0;30;1m    Paper git-Paper-448 (MC: 1.19.3)
+[0;36;1m                                               [m
+[19:46:01] [Server thread/INFO]: [ItemsAdder] [m[0;33;1mLightAPI not installed, please install it to see blocks emitting light: [0;36;1mhttps://a.devs.beer/lightapi-new[m
+[19:46:01] [Server thread/INFO]: [Houses] Enabling Houses v1.0-SNAPSHOT
+[19:46:02] [Server thread/INFO]: Running delayed init tasks
+[19:46:02] [Server thread/INFO]: [com.fastasyncworldedit.bukkit.regions.WorldGuardFeature] Plugin 'WorldGuard' found. Using it now.
+[19:46:02] [Server thread/INFO]: [com.fastasyncworldedit.bukkit.FaweBukkit] Attempting to use plugin 'WorldGuard'
+[19:46:02] [Server thread/INFO]: [ItemsAdder] [m[0;36;1m[Pack] Extracting internal contents from .jar[m
+[19:46:02] [Craft Scheduler Thread - 1 - ItemsAdder/INFO]: [ItemsAdder] [m [m
+[19:46:02] [Craft Scheduler Thread - 1 - ItemsAdder/INFO]: [ItemsAdder] [m[0;32;1mUPDATE available: [0;36;1mhttps://www.spigotmc.org/resources/73355/[m
+[19:46:02] [Craft Scheduler Thread - 1 - ItemsAdder/INFO]: [ItemsAdder] [m[0;30;1mCurrent version: 3.3.1[0;30;1m | Online version: 3.6.3-beta-13[m
+[19:46:02] [Craft Scheduler Thread - 1 - ItemsAdder/INFO]: [ItemsAdder] [m [m
+[19:46:02] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;32;1m[License] Spigot product licensed to: [0;36;1mkubakcn18 (500963)[m
+[19:46:02] [Server thread/INFO]: [ItemsAdder] [m[0;32;1m[Pack] DONE extracting internal contents from .jar[m
+[19:46:02] [Server thread/WARN]: [ItemsAdder] [m[0;33;1mDetected legacy ItemsAdder pack (pre 3.3.0).[m
+[19:46:02] [Server thread/WARN]: [ItemsAdder] [m[0;33;1mTrying to load files, unexpected results might occur.[m
+[19:46:02] [Server thread/WARN]: [ItemsAdder] [m[0;33;1mIt's adviced to follow the new guidelines: https://a.devs.beer/ia-new-guidelines-330[m
+[19:46:02] [User Authenticator #0/INFO]: UUID of player eripe14 is f095007e-e68e-3657-b58d-50692af9ea28
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\data\resource_pack\assets\z_iainternal\textures\gui\no_recipe.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\data\resource_pack\assets\z_iainternal\textures\gui\no_recipe.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\data\resource_pack\assets\z_iainternal\textures\gui\crafting.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\data\resource_pack\assets\z_iainternal\textures\gui\crafting.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\data\resource_pack\assets\z_iainternal\textures\gui\cooking.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\data\resource_pack\assets\z_iainternal\textures\gui\cooking.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\data\resource_pack\assets\z_iainternal\textures\gui\blank_menu.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\data\resource_pack\assets\z_iainternal\textures\gui\blank_menu.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\data\resource_pack\assets\z_iainternal\textures\gui\anvil_repair.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\data\resource_pack\assets\z_iainternal\textures\gui\anvil_repair.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\no_recipe.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\no_recipe.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\crafting.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\crafting.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\cooking.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\cooking.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\blank_menu.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\blank_menu.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\anvil_repair.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\anvil_repair.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:02] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mCan't set file file attributes ia_img_cached_date, ia_img_height, ia_img_width: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\smithing.png[m
+[19:46:02] [Server thread/WARN]: java.nio.file.FileSystemException: F:\codes\rp\houses\run\plugins\ItemsAdder\contents\_iainternal\resourcepack\assets\_iainternal\textures\gui\smithing.png:ia_img_cached_date: Nazwa pliku, nazwa katalogu lub sk³adnia etykiety woluminu jest niepoprawna
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:92)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:96)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.WindowsUserDefinedFileAttributeView.write(WindowsUserDefinedFileAttributeView.java:206)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractUserDefinedFileAttributeView.setAttribute(AbstractUserDefinedFileAttributeView.java:73)
+[19:46:02] [Server thread/WARN]: 	at java.base/sun.nio.fs.AbstractFileSystemProvider.setAttribute(AbstractFileSystemProvider.java:81)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.nio.file.Files.setAttribute(Files.java:1919)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.hS.a(SourceFile:94)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aK.<init>(SourceFile:198)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.aJ.aB(SourceFile:151)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.b(SourceFile:689)
+[19:46:02] [Server thread/WARN]: 	at ItemsAdder_3.3.1.jar//ia.m.I.a(SourceFile:591)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftTask.run(CraftTask.java:103)
+[19:46:02] [Server thread/WARN]: 	at org.bukkit.craftbukkit.v1_19_R2.scheduler.CraftScheduler.mainThreadHeartbeat(CraftScheduler.java:483)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.w(MinecraftServer.java:1114)
+[19:46:02] [Server thread/WARN]: 	at net.minecraft.server.MinecraftServer.lambda$spin$0(MinecraftServer.java:316)
+[19:46:02] [Server thread/WARN]: 	at java.base/java.lang.Thread.run(Thread.java:833)
+[19:46:03] [Server thread/ERROR]: [ItemsAdder] [m[0;31;1mNo namespace. File: /data/items_packs/_dictionaries/_common/en.yml[m
+[19:46:03] [Server thread/INFO]: Done (6.035s)! For help, type "help"
+[19:46:03] [Server thread/INFO]: Timings Reset
+[19:46:03] [User Authenticator #0/INFO]: UUID of player Wuruhi is 5b98d2c4-3b60-3d75-a343-19ce737a5023
+[19:46:03] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;33;1mLoaded [0;36;1m18[0;33;1m items[m
+[19:46:03] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;33;1mUsed [0;36;1m0[0;33;1m/[0;36;1m188[0;33;1m REAL block IDs[m
+[19:46:03] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;33;1mUsed [0;36;1m0[0;33;1m/[0;36;1m750[0;33;1m REAL_NOTE block IDs[m
+[19:46:03] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;33;1mUsed [0;36;1m0[0;33;1m/[0;36;1m63[0;33;1m REAL_TRANSPARENT block IDs[m
+[19:46:03] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;33;1mUsed [0;36;1m0[0;33;1m/[0;36;1m127[0;33;1m REAL_WIRE block IDs[m
+[19:46:03] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;33;1mUsed [0;36;1m0[0;33;1m/[0;36;1m14[0;33;1m FIRE block IDs[m
+[19:46:03] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;33;1mUsed [0;36;1m11[0;33;1m/[0;36;1m6608[0;33;1m font_images[m
+[19:46:03] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;32;1m[Init] Loaded [0;36;1m2[0;33;1m categories[m
+[19:46:03] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;32;1m[Init] Loaded successfully.[m
+[19:46:03] [Craft Scheduler Thread - 0 - ItemsAdder/INFO]: [ItemsAdder] [m[0;36;1m[Pack] Checking resourcepack url... [m
+[19:46:03] [Server thread/INFO]: eripe14 joined the game
+[19:46:03] [Server thread/INFO]: eripe14[/127.0.0.1:59044] logged in with entity id 1 at ([world]161.0332641171543, 68.0, -112.58681331671637)
+[19:46:03] [Craft Scheduler Thread - 1 - ItemsAdder/WARN]: [ItemsAdder] [m[0;33;1mWarning: null checksum. Make sure to run /iazip command to generate the resourcepack![m
+[19:46:03] [Server thread/INFO]: Wuruhi joined the game
+[19:46:03] [Server thread/INFO]: Wuruhi[/127.0.0.1:59047] logged in with entity id 3 at ([world]162.41390405766418, 68.0, -111.84447029225)
+[19:46:04] [Craft Scheduler Thread - 4 - ItemsAdder/INFO]: [ItemsAdder] [m[0;32;1m[Pack] Resourcepack URL is valid (external-host). Url: https://www.dropbox.com/scl/fi/v7warkydwg3s9gxtrpenv/generated.zip?rlkey=nmu1mynw3qkec1on23f2ongdq[maw=1[m
+[19:46:09] [Server thread/INFO]: eripe14 issued server command: //sel poly
+[19:46:22] [Server thread/INFO]: eripe14 issued server command: /dom stworz domek EXCLUSIVE APARTMENT dom1 100 0
+[19:46:32] [ForkJoinPool.commonPool-worker-1/INFO]: Using com.sk89q.worldedit.bukkit.adapter.impl.fawe.v1_19_R2.PaperweightStarlightRelighterFactory as relighter factory.
+[19:46:42] [Server thread/INFO]: eripe14 issued server command: /dom panel domek
+[19:46:48] [Async Chat Thread - #1/INFO]: [Not Secure] <Wuruhi> fg
+[19:46:53] [Server thread/INFO]: eripe14 issued server command: /dom panel domek
+[19:47:01] [WorldGuard Region I/O/INFO]: [WorldGuard] Region data changes made in 'world' have been background saved
+[20:09:53] [Server thread/INFO]: eripe14 lost connection: Disconnected
+[20:09:53] [Server thread/INFO]: eripe14 left the game

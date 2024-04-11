@@ -1,0 +1,22 @@
+{
+  "minecraft:recipes/misc/book": {
+    "criteria": {
+      "has_paper": "2024-04-07 18:29:26 +0200"
+    },
+    "done": true
+  },
+  "minecraft:recipes/decorations/cartography_table": {
+    "criteria": {
+      "has_paper": "2024-04-07 18:29:26 +0200"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "minecraft:ocean": "2024-04-02 22:08:58 +0200",
+      "minecraft:flower_forest": "2024-04-02 22:08:20 +0200"
+    },
+    "done": false
+  },
+  "DataVersion": 3218
+}
