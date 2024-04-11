@@ -6,8 +6,6 @@ import com.eripe14.houses.hook.implementation.ItemsAdderHook;
 import com.eripe14.houses.house.inventory.impl.HousePanelInventory;
 import com.eripe14.houses.house.inventory.impl.RentInventory;
 import com.eripe14.houses.house.region.FinalRegionResult;
-import com.eripe14.houses.house.region.HouseDistrict;
-import com.eripe14.houses.house.region.HouseType;
 import com.eripe14.houses.house.region.PolygonalRegionServiceImpl;
 import com.eripe14.houses.notification.NotificationAnnouncer;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;

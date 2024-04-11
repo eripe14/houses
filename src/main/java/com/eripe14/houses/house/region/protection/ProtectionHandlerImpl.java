@@ -7,12 +7,16 @@ import com.eripe14.houses.house.member.HouseMemberPermission;
 import com.eripe14.houses.house.member.HouseMemberService;
 import com.eripe14.houses.house.owner.Owner;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import panda.std.Option;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -30,15 +34,25 @@ public class ProtectionHandlerImpl implements ProtectionHandler {
     }
 
     @Override
-    public CompletableFuture<ProtectionInteractResult> canInteract(PlayerInteractEvent event, org.bukkit.Location clickedBlockLocation, Player player, HouseMemberPermission permission) {
+    public CompletableFuture<ProtectionInteractResult> canInteract(
+            PlayerInteractEvent event,
+            List<Material> interactableBlockMaterials,
+            Player player,
+            HouseMemberPermission permission
+    ) {
         return CompletableFuture.supplyAsync(() -> {
             UUID uuid = player.getUniqueId();
+            Block clickedBlock = event.getClickedBlock();
 
             ProtectionInteractResult notAllowed = new ProtectionInteractResult(false, false);
             ProtectionInteractResult notAllowedWithMessage = new ProtectionInteractResult(true, false);
-            ProtectionInteractResult allowed = new ProtectionInteractResult(true, true);
+            ProtectionInteractResult allowed = new ProtectionInteractResult(false, true);
 
             if (event.getHand() != EquipmentSlot.HAND) {
+                return notAllowed;
+            }
+
+            if (clickedBlock == null) {
                 return notAllowed;
             }
 
@@ -46,7 +60,14 @@ public class ProtectionHandlerImpl implements ProtectionHandler {
                 return notAllowed;
             }
 
-            Optional<ProtectedRegion> houseRegionOption = this.protectionService.findFirstRegion(clickedBlockLocation);
+            Location blockLocation = clickedBlock.getLocation();
+            Material blockMaterial = clickedBlock.getType();
+
+            if (!interactableBlockMaterials.contains(blockMaterial)) {
+                return notAllowed;
+            }
+
+            Optional<ProtectedRegion> houseRegionOption = this.protectionService.findFirstRegion(blockLocation);
 
             if (houseRegionOption.isEmpty()) {
                 return notAllowed;
@@ -63,7 +84,7 @@ public class ProtectionHandlerImpl implements ProtectionHandler {
             Owner owner = house.getOwner().get();
 
             if (owner.getUuid().equals(uuid)) {
-                return notAllowed;
+                return allowed;
             }
 
             Option<HouseMember> houseMemberOption = this.houseMemberService.getHouseMember(house, uuid);
@@ -75,11 +96,11 @@ public class ProtectionHandlerImpl implements ProtectionHandler {
 
             HouseMember houseMember = houseMemberOption.get();
 
-            if (this.houseMemberService.hasPermission(houseMember, HouseMemberPermission.OPEN_CHESTS)) {
-                return notAllowed;
+            if (this.houseMemberService.hasPermission(houseMember, permission)) {
+                return allowed;
             }
 
-            return allowed;
+            return notAllowedWithMessage;
         });
     }
 

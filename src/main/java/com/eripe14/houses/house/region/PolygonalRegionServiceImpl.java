@@ -1,6 +1,8 @@
 package com.eripe14.houses.house.region;
 
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
+import com.eripe14.houses.house.HouseDistrict;
+import com.eripe14.houses.house.HouseType;
 import com.eripe14.houses.scheduler.Scheduler;
 import com.eripe14.houses.schematic.SchematicService;
 import com.sk89q.worldedit.IncompleteRegionException;

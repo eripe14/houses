@@ -33,6 +33,4 @@ public class ProtectionService {
         return query.getApplicableRegions(wgLocation, RegionQuery.QueryOption.COMPUTE_PARENTS);
     }
 
-
-
 }

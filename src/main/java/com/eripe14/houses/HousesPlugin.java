@@ -31,8 +31,11 @@ import com.eripe14.houses.house.invite.HouseInviteService;
 import com.eripe14.houses.house.member.HouseMemberService;
 import com.eripe14.houses.house.purchase.PurchaseFurnitureInteractController;
 import com.eripe14.houses.house.region.PolygonalRegionServiceImpl;
+import com.eripe14.houses.house.region.protection.ProtectionHandler;
+import com.eripe14.houses.house.region.protection.ProtectionHandlerImpl;
 import com.eripe14.houses.house.region.protection.ProtectionService;
 import com.eripe14.houses.house.region.protection.controller.OpenChestController;
+import com.eripe14.houses.house.region.protection.controller.OpenDoorController;
 import com.eripe14.houses.house.region.protection.controller.PlaceFurnitureController;
 import com.eripe14.houses.house.rent.RentController;
 import com.eripe14.houses.house.rent.RentService;
@@ -95,6 +98,7 @@ public class HousesPlugin extends JavaPlugin {
     private RentService rentService;
 
     private ProtectionService protectionService;
+    private ProtectionHandler protectionHandler;
 
     private AlertService alertService;
     private AlertHandler alertHandler;
@@ -160,9 +164,20 @@ public class HousesPlugin extends JavaPlugin {
         this.rentService = new RentService();
 
         this.protectionService = new ProtectionService(this.worldGuard);
+        this.protectionHandler = new ProtectionHandlerImpl(
+                this.houseService,
+                this.houseMemberService,
+                this.protectionService
+        );
 
         this.alertService = new AlertService();
-        this.alertHandler = new AlertHandlerImpl(server, this.alertService, this.scheduler, this.messageConfiguration, this.notificationAnnouncer);
+        this.alertHandler = new AlertHandlerImpl(
+                server,
+                this.alertService,
+                this.scheduler,
+                this.messageConfiguration,
+                this.notificationAnnouncer
+        );
 
         this.confirmInventory = new ConfirmInventory(
                 this.scheduler,
@@ -249,11 +264,15 @@ public class HousesPlugin extends JavaPlugin {
                 new HouseInviteController(server, this.houseInviteService, this.messageConfiguration, this.notificationAnnouncer),
                 new RentController(this.rentService, this.pluginConfiguration, this.messageConfiguration, this.notificationAnnouncer),
                 new AlertController(this.alertService, this.alertHandler, this.pluginConfiguration),
-                new PlaceFurnitureController(this.protectionService, this.houseMemberService, this.houseService, this.notificationAnnouncer, this.messageConfiguration),
+                new PlaceFurnitureController(),
                 new OpenChestController(
-                        this.houseService,
-                        this.protectionService,
-                        this.houseMemberService,
+                        this.protectionHandler,
+                        this.notificationAnnouncer,
+                        this.messageConfiguration,
+                        this.pluginConfiguration
+                ),
+                new OpenDoorController(
+                        this.protectionHandler,
                         this.notificationAnnouncer,
                         this.messageConfiguration,
                         this.pluginConfiguration

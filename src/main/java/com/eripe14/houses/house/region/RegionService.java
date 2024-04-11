@@ -1,5 +1,7 @@
 package com.eripe14.houses.house.region;
 
+import com.eripe14.houses.house.HouseDistrict;
+import com.eripe14.houses.house.HouseType;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 

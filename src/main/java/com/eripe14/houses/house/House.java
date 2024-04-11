@@ -2,7 +2,6 @@ package com.eripe14.houses.house;
 
 import com.eripe14.houses.house.member.HouseMember;
 import com.eripe14.houses.house.owner.Owner;
-import com.eripe14.houses.house.region.HouseRegion;
 import com.eripe14.houses.house.rent.Rent;
 import panda.std.Option;
 

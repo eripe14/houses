@@ -1,4 +1,4 @@
-package com.eripe14.houses.house.region;
+package com.eripe14.houses.house;
 
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import dev.lone.itemsadder.api.CustomFurniture;

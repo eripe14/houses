@@ -1,7 +1,7 @@
 package com.eripe14.houses.house.rent;
 
 import com.eripe14.houses.house.member.HouseMember;
-import com.eripe14.houses.house.region.HouseRegion;
+import com.eripe14.houses.house.HouseRegion;
 
 import java.util.HashSet;
 import java.util.Set;
