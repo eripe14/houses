@@ -16,11 +16,10 @@ public class RentService {
 
     private final Map<String, Rent> rents = new HashMap<>();
 
-    public Rent createRent(UUID renter, House house, int pricePerDay, int days) {
+    public Rent createRent(UUID renter, House house, int days) {
         Duration rentDuration = Duration.ofDays(days);
-        RentedHouse rentedHouse = new RentedHouse(house.getHouseId(), renter, house.getRegion(), pricePerDay);
 
-        return new Rent(house.getHouseId(), renter, rentDuration, rentedHouse);
+        return new Rent(house.getHouseId(), renter, house.getDailyRentalPrice(), rentDuration);
     }
 
     public void addRent(Rent rent) {

@@ -15,20 +15,27 @@ import com.eripe14.houses.hook.implementation.ItemsAdderHook;
 import com.eripe14.houses.hook.implementation.VaultHook;
 import com.eripe14.houses.house.HouseCommand;
 import com.eripe14.houses.house.HouseService;
+import com.eripe14.houses.house.controller.HousePanelController;
 import com.eripe14.houses.house.inventory.action.impl.AddCoOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.AddPlayerAction;
+import com.eripe14.houses.house.inventory.action.impl.ChangeOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.ChangePermissionsAction;
+import com.eripe14.houses.house.inventory.action.impl.ExtendRentAction;
 import com.eripe14.houses.house.inventory.action.impl.RemoveCoOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.RemovePlayerAction;
 import com.eripe14.houses.house.inventory.impl.ChangePermissionsInventory;
 import com.eripe14.houses.house.inventory.impl.ConfirmInventory;
-import com.eripe14.houses.house.inventory.impl.HousePanelInventory;
+import com.eripe14.houses.house.inventory.impl.ExtendRentInventory;
 import com.eripe14.houses.house.inventory.impl.ListOfCoOwnersInventory;
 import com.eripe14.houses.house.inventory.impl.ListOfHouseMembersInventory;
+import com.eripe14.houses.house.inventory.impl.PurchasedPanelInventory;
 import com.eripe14.houses.house.inventory.impl.RentInventory;
+import com.eripe14.houses.house.inventory.impl.RentedPanelInventory;
+import com.eripe14.houses.house.inventory.impl.SelectPurchaseInventory;
 import com.eripe14.houses.house.invite.HouseInviteController;
 import com.eripe14.houses.house.invite.HouseInviteService;
 import com.eripe14.houses.house.member.HouseMemberService;
+import com.eripe14.houses.house.purchase.HousePurchaseService;
 import com.eripe14.houses.house.purchase.PurchaseFurnitureInteractController;
 import com.eripe14.houses.house.region.PolygonalRegionServiceImpl;
 import com.eripe14.houses.house.region.protection.ProtectionHandler;
@@ -94,6 +101,7 @@ public class HousesPlugin extends JavaPlugin {
     private HouseService houseService;
     private HouseInviteService houseInviteService;
     private HouseMemberService houseMemberService;
+    private HousePurchaseService housePurchaseService;
 
     private RentService rentService;
 
@@ -108,12 +116,17 @@ public class HousesPlugin extends JavaPlugin {
     private RemovePlayerAction removePlayerAction;
     private RemoveCoOwnerAction removeCoOwnerAction;
     private ChangePermissionsAction changePermissionsAction;
+    private ExtendRentAction extendRentAction;
+    private ChangeOwnerAction changeOwnerAction;
 
     private ConfirmInventory confirmInventory;
+    private SelectPurchaseInventory selectPurchaseInventory;
     private ListOfHouseMembersInventory listOfHouseMembersInventory;
     private ListOfCoOwnersInventory listOfCoOwnersInventory;
     private ChangePermissionsInventory changePermissionsInventory;
-    private HousePanelInventory housePanelInventory;
+    private ExtendRentInventory extendRentInventory;
+    private PurchasedPanelInventory purchasedPanelInventory;
+    private RentedPanelInventory rentedPanelInventory;
     private RentInventory rentInventory;
 
     private LiteCommands<CommandSender> liteCommands;
@@ -153,13 +166,21 @@ public class HousesPlugin extends JavaPlugin {
         this.purchaseService = new PurchaseService(this.economy);
 
         this.schematicService = new SchematicService(this, this.worldEdit);
-        this.polygonalRegionService = new PolygonalRegionServiceImpl(server, this.scheduler, this.worldEdit, this.worldGuard, this.schematicService, this.pluginConfiguration);
+        this.polygonalRegionService = new PolygonalRegionServiceImpl(
+                server,
+                this.scheduler,
+                this.worldEdit,
+                this.worldGuard,
+                this.schematicService,
+                this.pluginConfiguration
+        );
 
         this.eventCaller = new EventCaller(server);
 
         this.houseService = new HouseService();
         this.houseInviteService = new HouseInviteService(this.eventCaller, this.pluginConfiguration);
         this.houseMemberService = new HouseMemberService(this.houseService, this.pluginConfiguration);
+        this.housePurchaseService = new HousePurchaseService(this.houseService, this.purchaseService, this.pluginConfiguration);
 
         this.rentService = new RentService();
 
@@ -182,6 +203,37 @@ public class HousesPlugin extends JavaPlugin {
         this.confirmInventory = new ConfirmInventory(
                 this.scheduler,
                 this.inventoryConfiguration
+        );
+        this.extendRentInventory = new ExtendRentInventory(
+                this.scheduler,
+                this.purchaseService,
+                this.rentService,
+                this.houseService,
+                this.confirmInventory,
+                this.notificationAnnouncer,
+                this.inventoryConfiguration,
+                this.messageConfiguration
+        );
+        this.rentInventory = new RentInventory(
+                this.scheduler,
+                this.purchaseService,
+                this.housePurchaseService,
+                this.houseService,
+                this.rentService,
+                this.confirmInventory,
+                this.messageConfiguration,
+                this.inventoryConfiguration,
+                this.pluginConfiguration,
+                this.notificationAnnouncer
+        );
+        this.selectPurchaseInventory = new SelectPurchaseInventory(
+                this.scheduler,
+                this.housePurchaseService,
+                this.confirmInventory,
+                this.rentInventory,
+                this.notificationAnnouncer,
+                this.inventoryConfiguration,
+                this.messageConfiguration
         );
         this.listOfHouseMembersInventory = new ListOfHouseMembersInventory(
                 this.scheduler,
@@ -240,31 +292,45 @@ public class HousesPlugin extends JavaPlugin {
                 this.listOfHouseMembersInventory,
                 this.inventoryConfiguration
         );
+        this.extendRentAction = new ExtendRentAction(
+                this.extendRentInventory
+        );
+        this.changeOwnerAction = new ChangeOwnerAction(
+                this.houseMemberService,
+                this.houseInviteService,
+                this.confirmInventory,
+                this.notificationAnnouncer,
+                this.messageConfiguration,
+                this.pluginConfiguration
+        );
 
-        this.housePanelInventory = new HousePanelInventory(
+        this.rentedPanelInventory = new RentedPanelInventory(
                 this.scheduler,
                 this.addPlayerAction,
                 this.addCoOwnerAction,
                 this.removePlayerAction,
                 this.removeCoOwnerAction,
                 this.changePermissionsAction,
-                this.confirmInventory, this.messageConfiguration,
+                this.extendRentAction,
+                this.changeOwnerAction,
                 this.inventoryConfiguration,
                 this.pluginConfiguration
         );
+        this.purchasedPanelInventory = new PurchasedPanelInventory(
 
-        this.rentInventory = new RentInventory(
-                this.scheduler, this.houseService,
-                this.rentService, this.messageConfiguration,
-                this.inventoryConfiguration, this.pluginConfiguration,
-                this.notificationAnnouncer);
+        );
 
         Stream.of(
-                new PurchaseFurnitureInteractController(this.itemsAdderHook, this.houseService, this.pluginConfiguration),
+                new PurchaseFurnitureInteractController(this.selectPurchaseInventory, this.rentInventory, this.houseService, this.pluginConfiguration),
                 new HouseInviteController(server, this.houseInviteService, this.messageConfiguration, this.notificationAnnouncer),
                 new RentController(this.rentService, this.pluginConfiguration, this.messageConfiguration, this.notificationAnnouncer),
                 new AlertController(this.alertService, this.alertHandler, this.pluginConfiguration),
-                new PlaceFurnitureController(),
+                new PlaceFurnitureController(
+                        this.itemsAdderHook,
+                        this.protectionHandler,
+                        this.notificationAnnouncer,
+                        this.messageConfiguration
+                ),
                 new OpenChestController(
                         this.protectionHandler,
                         this.notificationAnnouncer,
@@ -275,6 +341,13 @@ public class HousesPlugin extends JavaPlugin {
                         this.protectionHandler,
                         this.notificationAnnouncer,
                         this.messageConfiguration,
+                        this.pluginConfiguration
+                ),
+                new HousePanelController(
+                        this.houseService,
+                        this.protectionService,
+                        this.rentedPanelInventory,
+                        this.purchasedPanelInventory,
                         this.pluginConfiguration
                 )
         ).forEach(plugin -> this.getServer().getPluginManager().registerEvents(plugin, this));
@@ -288,7 +361,7 @@ public class HousesPlugin extends JavaPlugin {
                 .missingPermission(new MissingPermissionsHandler(this.messageConfiguration, this.notificationAnnouncer))
                 .invalidUsage(new InvalidUsageHandler(this.messageConfiguration, this.notificationAnnouncer))
                 .commands(
-                        new HouseCommand(server, this.itemsAdderHook, this.rentInventory, this.housePanelInventory, this.worldGuard, this.houseService, this.polygonalRegionService, this.messageConfiguration, this.pluginConfiguration, this.notificationAnnouncer)
+                        new HouseCommand(server, this.itemsAdderHook, this.rentInventory, this.rentedPanelInventory, this.worldGuard, this.houseService, this.polygonalRegionService, this.messageConfiguration, this.pluginConfiguration, this.notificationAnnouncer, this.configurationManager)
                 )
                 .build();
     }

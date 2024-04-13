@@ -73,16 +73,16 @@ public class PolygonalRegionServiceImpl implements RegionService {
         RegionResult plotRegionResult = this.getRegion(player, plotRegionName);
         FinalRegionResult failure = new FinalRegionResult(false, Option.none(), Option.none());
 
+        if (!plotRegionResult.success()) {
+            finalRegionResultCompletableFuture.complete(failure);
+            return finalRegionResultCompletableFuture;
+        }
+
         this.scheduler.sync(() -> this.server.dispatchCommand(player, "/sel"));
 
         this.scheduler.laterSync(() -> {
             try {
                 RegionResult houseRegionResult = this.getRegion(player, houseRegionName);
-
-                if (!plotRegionResult.success()) {
-                    finalRegionResultCompletableFuture.complete(failure);
-                    return;
-                }
 
                 if (!houseRegionResult.success()) {
                     finalRegionResultCompletableFuture.complete(failure);
@@ -98,8 +98,10 @@ public class PolygonalRegionServiceImpl implements RegionService {
 
                 plotRegion.setFlag(Flags.CHEST_ACCESS, StateFlag.State.ALLOW);
                 plotRegion.setFlag(Flags.USE, StateFlag.State.ALLOW);
+                plotRegion.setFlag(Flags.BLOCK_PLACE, StateFlag.State.ALLOW);
                 houseRegion.setFlag(Flags.CHEST_ACCESS, StateFlag.State.ALLOW);
                 houseRegion.setFlag(Flags.USE, StateFlag.State.ALLOW);
+                houseRegion.setFlag(Flags.BLOCK_PLACE, StateFlag.State.ALLOW);
 
                 finalRegionResultCompletableFuture.complete(new FinalRegionResult(true, Option.of(plotRegion), Option.of(houseRegion)));
                 this.scheduler.sync(() -> this.server.dispatchCommand(player, "/sel"));

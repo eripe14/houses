@@ -81,6 +81,9 @@ public class PluginConfiguration implements ReloadableConfig {
             Material.YELLOW_SHULKER_BOX
     );
 
+    @Description({ " ", "# Procent kwoty kupna, która zostanie zwrócona po sprzedaży domu"})
+    public int percentOfPurchasePriceReturned = 70;
+
     @Override
     public Resource resource(File folder) {
         return Source.of(folder, "config.yml");

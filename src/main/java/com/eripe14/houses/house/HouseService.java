@@ -20,25 +20,47 @@ public class HouseService {
 
     private final Map<String, House> houses = new HashMap<>();
 
-    public House createHouse(String houseId, HouseDistrict district, HouseType type, Player ownerPlayer, FinalRegionResult result, CustomFurniture purchaseFurniture, int dailyRentalPrice, int buyPrice) {
+    public House createHouse(
+            String houseId,
+            String defaultSchematicName,
+            HouseDistrict district,
+            HouseType type,
+            Player ownerPlayer,
+            FinalRegionResult result,
+            CustomFurniture purchaseFurniture,
+            int dailyRentalPrice,
+            int buyPrice
+    ) {
         ProtectedRegion plotRegion = result.plot().get();
         ProtectedRegion houseRegion = result.house().get();
 
-        HouseRegion region = new HouseRegion(houseId, type, district, (ProtectedPolygonalRegion) plotRegion, (ProtectedPolygonalRegion) houseRegion, Option.of(purchaseFurniture));
+        HouseRegion region = new HouseRegion(
+                houseId,
+                defaultSchematicName,
+                type,
+                district,
+                (ProtectedPolygonalRegion) plotRegion,
+                (ProtectedPolygonalRegion) houseRegion,
+                purchaseFurniture
+        );
 
         if (buyPrice != 0) {
-            return new House(houseId, Option.of(new Owner(ownerPlayer.getUniqueId(), ownerPlayer.getName())), region, buyPrice, dailyRentalPrice);
+            return new House(houseId, Option.none(), region, buyPrice, dailyRentalPrice);
         }
 
-        return new House(houseId, Option.of(new Owner(ownerPlayer.getUniqueId(), ownerPlayer.getName())), region, dailyRentalPrice);
+        return new House(houseId, Option.none(), region, dailyRentalPrice);
     }
 
     public boolean isHouseExists(String houseId) {
         return this.houses.containsKey(houseId);
     }
 
-    public void rentHouse(House house, Rent rent) {
+    public void rentHouse(Player player, House house, Rent rent) {
+        Owner owner = new Owner(player.getUniqueId(), player.getName());
+
         house.setRent(rent);
+        house.setOwner(owner);
+        this.addHouse(house);
     }
 
     public void addHouse(House house) {
@@ -57,12 +79,7 @@ public class HouseService {
         for (House value : this.houses.values()) {
             HouseRegion region = value.getRegion();
 
-            if (!region.getPurchaseFurniture().isPresent()) {
-                return Option.none();
-            }
-
-            CustomFurniture customFurniture = region.getPurchaseFurniture().get();
-
+            CustomFurniture customFurniture = region.getPurchaseFurniture();
             Entity entity = customFurniture.getArmorstand();
 
             if (entity == null) {

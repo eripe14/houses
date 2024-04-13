@@ -1,10 +1,11 @@
 package com.eripe14.houses.house;
 
+import com.eripe14.houses.configuration.ConfigurationManager;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import com.eripe14.houses.hook.implementation.ItemsAdderHook;
-import com.eripe14.houses.house.inventory.impl.HousePanelInventory;
 import com.eripe14.houses.house.inventory.impl.RentInventory;
+import com.eripe14.houses.house.inventory.impl.RentedPanelInventory;
 import com.eripe14.houses.house.region.FinalRegionResult;
 import com.eripe14.houses.house.region.PolygonalRegionServiceImpl;
 import com.eripe14.houses.notification.NotificationAnnouncer;
@@ -17,7 +18,6 @@ import dev.rollczi.litecommands.annotations.argument.Arg;
 import dev.rollczi.litecommands.annotations.command.Command;
 import dev.rollczi.litecommands.annotations.context.Context;
 import dev.rollczi.litecommands.annotations.execute.Execute;
-import dev.rollczi.litecommands.annotations.optional.OptionalArg;
 import dev.rollczi.litecommands.annotations.permission.Permission;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -25,6 +25,7 @@ import panda.std.Option;
 import panda.utilities.text.Formatter;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Command(name = "house", aliases = {"dom"})
@@ -34,28 +35,38 @@ public class HouseCommand {
     private final Server server;
     private final ItemsAdderHook itemsAdderHook;
     private final RentInventory rentInventory;
-    private final HousePanelInventory housePanelInventory;
+    private final RentedPanelInventory rentedPanelInventory;
     private final WorldGuard worldGuard;
     private final HouseService houseService;
     private final PolygonalRegionServiceImpl polygonalRegionService;
     private final MessageConfiguration messageConfiguration;
     private final PluginConfiguration pluginConfiguration;
     private final NotificationAnnouncer notificationAnnouncer;
+    private final ConfigurationManager configurationManager;
 
-    public HouseCommand(Server server, ItemsAdderHook itemsAdderHook, RentInventory rentInventory,
-                        HousePanelInventory housePanelInventory, WorldGuard worldGuard,
-                        HouseService houseService, PolygonalRegionServiceImpl polygonalRegionService,
-                        MessageConfiguration messageConfiguration, PluginConfiguration pluginConfiguration, NotificationAnnouncer notificationAnnouncer) {
+    public HouseCommand(Server server,
+                        ItemsAdderHook itemsAdderHook,
+                        RentInventory rentInventory,
+                        RentedPanelInventory rentedPanelInventory,
+                        WorldGuard worldGuard,
+                        HouseService houseService,
+                        PolygonalRegionServiceImpl polygonalRegionService,
+                        MessageConfiguration messageConfiguration,
+                        PluginConfiguration pluginConfiguration,
+                        NotificationAnnouncer notificationAnnouncer,
+                        ConfigurationManager configurationManager
+    ) {
         this.server = server;
         this.itemsAdderHook = itemsAdderHook;
         this.rentInventory = rentInventory;
-        this.housePanelInventory = housePanelInventory;
+        this.rentedPanelInventory = rentedPanelInventory;
         this.worldGuard = worldGuard;
         this.houseService = houseService;
         this.polygonalRegionService = polygonalRegionService;
         this.messageConfiguration = messageConfiguration;
         this.pluginConfiguration = pluginConfiguration;
         this.notificationAnnouncer = notificationAnnouncer;
+        this.configurationManager = configurationManager;
     }
 
     @Execute(name = "usun")
@@ -67,9 +78,7 @@ public class HouseCommand {
             return;
         }
 
-        manager.getRegions().forEach((s, protectedRegion) -> {
-            manager.removeRegion(s);
-        });
+        manager.getRegions().forEach((s, protectedRegion) -> manager.removeRegion(s));
     }
 
     @Execute(name = "create", aliases = {"stworz"})
@@ -79,7 +88,7 @@ public class HouseCommand {
                 @Arg("house-type") HouseType type,
                 @Arg("schematic-name") String schematicName,
                 @Arg("rental-price") Integer rentalPrice,
-                @OptionalArg("buy-price") Integer buyPrice) {
+                @Arg("buy-price") Optional<Integer> buyPrice) {
         CompletableFuture<FinalRegionResult> regions = this.polygonalRegionService.getRegions(player, houseId, district, type);
 
         Formatter formatter = new Formatter();
@@ -102,7 +111,8 @@ public class HouseCommand {
             }
 
             CustomFurniture purchaseFurniture = this.itemsAdderHook.spawnCustomFurniture(player, this.pluginConfiguration.itemsAdderPurchaseNamespacedId);
-            House house = this.houseService.createHouse(houseId, district, type, player, result, purchaseFurniture, rentalPrice, buyPrice);
+            House house = this.houseService.createHouse(houseId, schematicName, district, type, player, result, purchaseFurniture, rentalPrice, buyPrice.orElse(0));
+
             this.houseService.addHouse(house);
             this.polygonalRegionService.saveRegions(player.getWorld(), result, schematicName);
 
@@ -119,7 +129,7 @@ public class HouseCommand {
             return;
         }
 
-        this.housePanelInventory.openInventory(player, optionHouse.get());
+        this.rentedPanelInventory.openInventory(player, optionHouse.get());
     }
 
     @Execute(name = "info")
@@ -135,6 +145,7 @@ public class HouseCommand {
             player.sendMessage(Objects.requireNonNull(this.server.getPlayer(houseMember.getMemberUuid())).getName());
         });
 
+        player.sendMessage("owner: " + this.server.getPlayer(house.getOwner().get().getUuid()).getName());
         player.sendMessage("houses: " + this.houseService.getAllHouses().size());
     }
 
@@ -147,6 +158,11 @@ public class HouseCommand {
         }
 
         this.rentInventory.openInventory(player, optionHouse.get());
+    }
+
+    @Execute(name = "reload", aliases = {"przeladuj"})
+    void reload(@Context Player player) {
+        this.configurationManager.reload();
     }
 
 }

@@ -12,7 +12,7 @@
 regions:
     plot_exclusive_apartment_domek:
         members: {}
-        flags: {use: allow, chest-access: allow}
+        flags: {use: allow, chest-access: allow, block-place: allow}
         owners: {}
         type: poly2d
         priority: 10
@@ -26,7 +26,7 @@ regions:
     house_exclusive_apartment_domek:
         parent: plot_exclusive_apartment_domek
         members: {}
-        flags: {use: allow, chest-access: allow}
+        flags: {use: allow, chest-access: allow, block-place: allow}
         owners: {}
         type: poly2d
         priority: 10
@@ -39,7 +39,8 @@ regions:
         - {x: 159, z: -106}
     __global__:
         members: {}
-        flags: {use: deny, chest-access: deny, block-place: allow}
+        flags: {use: deny, ia-vehicle-place: allow, chest-access: deny, block-place: deny,
+            ia-vehicle-remove: deny}
         owners: {}
         type: global
         priority: 0

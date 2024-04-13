@@ -12,14 +12,16 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import panda.std.Option;
+import panda.std.reactive.Completable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public class ProtectionHandlerImpl implements ProtectionHandler {
 
@@ -34,74 +36,136 @@ public class ProtectionHandlerImpl implements ProtectionHandler {
     }
 
     @Override
-    public CompletableFuture<ProtectionInteractResult> canInteract(
+    public Completable<ProtectionInteractResult> canInteractWithBlocks(
             PlayerInteractEvent event,
             List<Material> interactableBlockMaterials,
             Player player,
             HouseMemberPermission permission
     ) {
-        return CompletableFuture.supplyAsync(() -> {
-            UUID uuid = player.getUniqueId();
-            Block clickedBlock = event.getClickedBlock();
+        Completable<ProtectionInteractResult> resultCompletable = Completable.create();
 
-            ProtectionInteractResult notAllowed = new ProtectionInteractResult(false, false);
-            ProtectionInteractResult notAllowedWithMessage = new ProtectionInteractResult(true, false);
-            ProtectionInteractResult allowed = new ProtectionInteractResult(false, true);
+        UUID uuid = player.getUniqueId();
+        Block clickedBlock = event.getClickedBlock();
 
-            if (event.getHand() != EquipmentSlot.HAND) {
-                return notAllowed;
-            }
+        ProtectionInteractResult cancelEvent = new ProtectionInteractResult(true);
+        ProtectionInteractResult notCancelEvent = new ProtectionInteractResult(false);
 
-            if (clickedBlock == null) {
-                return notAllowed;
-            }
+        if (event.getHand() != EquipmentSlot.HAND) {
+            return resultCompletable.complete(notCancelEvent);
+        }
 
-            if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                return notAllowed;
-            }
+        if (clickedBlock == null) {
+            return resultCompletable.complete(notCancelEvent);
+        }
 
-            Location blockLocation = clickedBlock.getLocation();
-            Material blockMaterial = clickedBlock.getType();
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return resultCompletable.complete(notCancelEvent);
+        }
 
-            if (!interactableBlockMaterials.contains(blockMaterial)) {
-                return notAllowed;
-            }
+        Location blockLocation = clickedBlock.getLocation();
+        Material blockMaterial = clickedBlock.getType();
 
-            Optional<ProtectedRegion> houseRegionOption = this.protectionService.findFirstRegion(blockLocation);
+        if (!interactableBlockMaterials.contains(blockMaterial)) {
+            return resultCompletable.complete(notCancelEvent);
+        }
 
-            if (houseRegionOption.isEmpty()) {
-                return notAllowed;
-            }
+        Optional<ProtectedRegion> houseRegionOption = this.protectionService.findFirstRegion(blockLocation);
 
-            ProtectedRegion houseRegion = houseRegionOption.get();
-            Option<House> houseOption = this.houseService.getHouse(houseRegion);
+        if (houseRegionOption.isEmpty()) {
+            return resultCompletable.complete(notCancelEvent);
+        }
 
-            if (houseOption.isEmpty()) {
-                return notAllowed;
-            }
+        ProtectedRegion houseRegion = houseRegionOption.get();
+        Option<House> houseOption = this.houseService.getHouse(houseRegion);
 
-            House house = houseOption.get();
-            Owner owner = house.getOwner().get();
+        if (houseOption.isEmpty()) {
+            return resultCompletable.complete(notCancelEvent);
+        }
 
-            if (owner.getUuid().equals(uuid)) {
-                return allowed;
-            }
+        House house = houseOption.get();
+        Option<Owner> ownerOption = house.getOwner();
+        Option<HouseMember> houseMemberOption = this.houseMemberService.getHouseMember(house, uuid);
 
-            Option<HouseMember> houseMemberOption = this.houseMemberService.getHouseMember(house, uuid);
+        if (ownerOption.isEmpty()) {
+            return resultCompletable.complete(cancelEvent);
+        }
 
-            if (houseMemberOption.isEmpty()) {
-                event.setCancelled(true);
-                return notAllowedWithMessage;
-            }
+        Owner owner = ownerOption.get();
 
-            HouseMember houseMember = houseMemberOption.get();
+        if (owner.getUuid().equals(uuid)) {
+            return resultCompletable.complete(notCancelEvent);
+        }
 
-            if (this.houseMemberService.hasPermission(houseMember, permission)) {
-                return allowed;
-            }
+        if (houseMemberOption.isEmpty()) {
+            return resultCompletable.complete(cancelEvent);
+        }
 
-            return notAllowedWithMessage;
-        });
+        HouseMember houseMember = houseMemberOption.get();
+
+        if (this.houseMemberService.hasPermission(houseMember, permission)) {
+            return resultCompletable.complete(notCancelEvent);
+        }
+
+        return resultCompletable.complete(cancelEvent);
+    }
+
+    @Override
+    public Completable<ProtectionInteractResult> canBuild(BlockPlaceEvent event, Player player, HouseMemberPermission permission) {
+        Completable<ProtectionInteractResult> resultCompletable = Completable.create();
+
+        UUID uuid = player.getUniqueId();
+        Block blockPlaced = event.getBlockPlaced();
+        Location blockLocation = blockPlaced.getLocation();
+        ItemStack itemInHand = event.getItemInHand();
+
+        ProtectionInteractResult cancelEvent = new ProtectionInteractResult(true);
+        ProtectionInteractResult notCancelEvent = new ProtectionInteractResult(false);
+        /* NullPointer
+        CustomStack customStack = CustomStack.byItemStack(itemInHand);
+
+        if (!CustomStack.isInRegistry(customStack.getNamespacedID())) {
+            return resultCompletable.complete(cancelEvent);
+        }
+         */
+
+        Optional<ProtectedRegion> houseRegionOption = this.protectionService.findFirstRegion(blockLocation);
+
+        if (houseRegionOption.isEmpty()) {
+            return resultCompletable.complete(notCancelEvent);
+        }
+
+        ProtectedRegion houseRegion = houseRegionOption.get();
+        Option<House> houseOption = this.houseService.getHouse(houseRegion);
+
+        if (houseOption.isEmpty()) {
+            return resultCompletable.complete(notCancelEvent);
+        }
+
+        House house = houseOption.get();
+        Option<Owner> ownerOption = house.getOwner();
+        Option<HouseMember> houseMemberOption = this.houseMemberService.getHouseMember(house, uuid);
+
+        if (ownerOption.isEmpty()) {
+            return resultCompletable.complete(cancelEvent);
+        }
+
+        Owner owner = ownerOption.get();
+
+        if (owner.getUuid().equals(uuid)) {
+            return resultCompletable.complete(notCancelEvent);
+        }
+
+        if (houseMemberOption.isEmpty()) {
+            return resultCompletable.complete(cancelEvent);
+        }
+
+        HouseMember houseMember = houseMemberOption.get();
+
+        if (this.houseMemberService.hasPermission(houseMember, permission)) {
+            return resultCompletable.complete(notCancelEvent);
+        }
+
+        return resultCompletable.complete(cancelEvent);
     }
 
 }

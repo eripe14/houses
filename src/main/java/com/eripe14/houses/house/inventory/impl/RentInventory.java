@@ -6,34 +6,55 @@ import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import com.eripe14.houses.house.House;
 import com.eripe14.houses.house.HouseService;
 import com.eripe14.houses.house.inventory.Inventory;
+import com.eripe14.houses.house.purchase.HousePurchaseService;
 import com.eripe14.houses.house.rent.Rent;
 import com.eripe14.houses.house.rent.RentService;
 import com.eripe14.houses.notification.NotificationAnnouncer;
+import com.eripe14.houses.purchase.PurchaseService;
 import com.eripe14.houses.scheduler.Scheduler;
 import com.eripe14.houses.util.adventure.Legacy;
 import dev.triumphteam.gui.components.GuiAction;
 import dev.triumphteam.gui.guis.Gui;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import panda.std.Option;
 import panda.utilities.text.Formatter;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public class RentInventory extends Inventory {
 
     private final Scheduler scheduler;
+    private final PurchaseService purchaseService;
+    private final HousePurchaseService housePurchaseService;
     private final HouseService houseService;
     private final RentService rentService;
+    private final ConfirmInventory confirmInventory;
     private final MessageConfiguration messageConfiguration;
     private final InventoryConfiguration inventoryConfiguration;
     private final PluginConfiguration pluginConfiguration;
     private final NotificationAnnouncer notificationAnnouncer;
 
-    public RentInventory(Scheduler scheduler, HouseService houseService, RentService rentService, MessageConfiguration messageConfiguration, InventoryConfiguration inventoryConfiguration, PluginConfiguration pluginConfiguration, NotificationAnnouncer notificationAnnouncer) {
+    public RentInventory(
+            Scheduler scheduler,
+            PurchaseService purchaseService,
+            HousePurchaseService housePurchaseService,
+            HouseService houseService,
+            RentService rentService,
+            ConfirmInventory confirmInventory,
+            MessageConfiguration messageConfiguration,
+            InventoryConfiguration inventoryConfiguration,
+            PluginConfiguration pluginConfiguration,
+            NotificationAnnouncer notificationAnnouncer
+    ) {
         this.scheduler = scheduler;
+        this.purchaseService = purchaseService;
+        this.housePurchaseService = housePurchaseService;
         this.houseService = houseService;
         this.rentService = rentService;
+        this.confirmInventory = confirmInventory;
         this.messageConfiguration = messageConfiguration;
         this.inventoryConfiguration = inventoryConfiguration;
         this.pluginConfiguration = pluginConfiguration;
@@ -44,15 +65,16 @@ public class RentInventory extends Inventory {
         this.scheduler.async(() -> {
             InventoryConfiguration.Rent rentInventory = this.inventoryConfiguration.rent;
             MessageConfiguration.House houseMessage = this.messageConfiguration.house;
-            UUID uuid = player.getUniqueId();
 
-            AtomicInteger days = new AtomicInteger();
-            AtomicInteger price = new AtomicInteger();
+            int minRentDays = this.pluginConfiguration.minRentDays;
+            AtomicInteger days = new AtomicInteger(minRentDays);
 
             Formatter formatter = new Formatter();
+            formatter.register("{HOUSE_ID}", house.getHouseId());
             formatter.register("{DAYS}", days.get());
-            formatter.register("{PRICE}", price.get());
-            formatter.register("{MIN_RENT_TIME}", this.pluginConfiguration.minRentDays);
+            formatter.register("{PRICE}", house.getDailyRentalPrice() * days.get());
+            formatter.register("{MIN_RENT_TIME}", minRentDays);
+            formatter.register("{RENT_TIME}", days.get());
 
             Gui gui = Gui.gui()
                     .title(Legacy.title(rentInventory.title))
@@ -65,38 +87,50 @@ public class RentInventory extends Inventory {
             }
 
             GuiAction<InventoryClickEvent> rentAction = (event) -> {
-                if (days.get() <= 0) {
-                    this.notificationAnnouncer.sendMessage(player, houseMessage.requiredRentalTime);
+                if (days.get() <= minRentDays) {
+                    this.notificationAnnouncer.sendMessage(player, houseMessage.requiredRentalTime, formatter);
                     return;
                 }
 
-                Rent rent = this.rentService.createRent(uuid, house, house.getDailyRentalPrice(), days.get());
+                if (!this.purchaseService.hasEnoughMoney(player, house.getDailyRentalPrice() * days.get())) {
+                    this.notificationAnnouncer.sendMessage(player, houseMessage.notEnoughMoneyToRent, formatter);
+                    gui.close(player);
 
-                this.rentService.addRent(rent);
-                this.houseService.rentHouse(house, rent);
+                    return;
+                }
 
-                this.notificationAnnouncer.sendMessage(player, houseMessage.rentedHouse, formatter);
+                Consumer<UUID> confirm = (confirmPlayerUuid) -> {
+                    Rent rent = this.rentService.createRent(confirmPlayerUuid, house, days.get());
+
+                    this.rentService.addRent(rent);
+                    this.houseService.rentHouse(player, house, rent);
+
+                    this.housePurchaseService.addPanelItem(player);
+                    this.housePurchaseService.killPurchaseFurniture(house);
+                    this.purchaseService.withdrawMoney(player, house.getDailyRentalPrice() * days.get());
+
+                    this.notificationAnnouncer.sendMessage(player, houseMessage.rentedHouse, formatter);
+                    gui.close(player);
+                };
+
+                this.confirmInventory.openInventory(player, Option.none(), confirm, gui::close);
             };
 
             this.setItem(gui, rentInventory.rentItem, rentAction, formatter);
 
             this.setItem(gui, rentInventory.addDayItem, (event) -> {
-                days.getAndIncrement();
-                price.set(house.getDailyRentalPrice() * days.get());
-
+                this.updateFormatter(formatter, days.incrementAndGet(), house);
                 this.setItem(gui, rentInventory.rentItem, rentAction, formatter);
                 gui.update();
             });
 
             this.setItem(gui, rentInventory.removeDayItem, (event) -> {
-                if (days.get() == this.pluginConfiguration.minRentDays) {
+                if (days.get() <= minRentDays) {
                     this.notificationAnnouncer.sendMessage(player, houseMessage.requiredRentalTime, formatter);
                     return;
                 }
 
-                days.getAndDecrement();
-                price.set(house.getDailyRentalPrice() * days.get());
-
+                this.updateFormatter(formatter, days.decrementAndGet(), house);
                 this.setItem(gui, rentInventory.rentItem, rentAction, formatter);
                 gui.update();
             });
@@ -105,6 +139,11 @@ public class RentInventory extends Inventory {
 
             this.scheduler.sync(() -> gui.open(player));
         });
+    }
+
+    private void updateFormatter(Formatter formatter, int days, House house) {
+        formatter.register("{DAYS}", days);
+        formatter.register("{PRICE}", house.getDailyRentalPrice() * days);
     }
 
 }

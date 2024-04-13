@@ -1,9 +1,10 @@
 package com.eripe14.houses.house.purchase;
 
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
-import com.eripe14.houses.hook.implementation.ItemsAdderHook;
 import com.eripe14.houses.house.House;
 import com.eripe14.houses.house.HouseService;
+import com.eripe14.houses.house.inventory.impl.RentInventory;
+import com.eripe14.houses.house.inventory.impl.SelectPurchaseInventory;
 import dev.lone.itemsadder.api.CustomFurniture;
 import dev.lone.itemsadder.api.Events.FurnitureInteractEvent;
 import org.bukkit.Location;
@@ -15,12 +16,19 @@ import panda.std.Option;
 
 public class PurchaseFurnitureInteractController implements Listener {
 
-    private final ItemsAdderHook itemsAdderHook;
+    private final SelectPurchaseInventory selectPurchaseInventory;
+    private final RentInventory rentInventory;
     private final HouseService houseService;
     private final PluginConfiguration pluginConfiguration;
 
-    public PurchaseFurnitureInteractController(ItemsAdderHook itemsAdderHook, HouseService houseService, PluginConfiguration pluginConfiguration) {
-        this.itemsAdderHook = itemsAdderHook;
+    public PurchaseFurnitureInteractController(
+            SelectPurchaseInventory selectPurchaseInventory,
+            RentInventory rentInventory,
+            HouseService houseService,
+            PluginConfiguration pluginConfiguration
+    ) {
+        this.selectPurchaseInventory = selectPurchaseInventory;
+        this.rentInventory = rentInventory;
         this.houseService = houseService;
         this.pluginConfiguration = pluginConfiguration;
     }
@@ -48,8 +56,12 @@ public class PurchaseFurnitureInteractController implements Listener {
 
         House house = houseOption.get();
 
-        player.sendMessage(house.toString());
-        player.sendMessage("działa");
+        if (house.getBuyPrice() == 0) {
+            this.rentInventory.openInventory(player, house);
+            return;
+        }
+
+        this.selectPurchaseInventory.openInventory(player, house);
     }
 
 }

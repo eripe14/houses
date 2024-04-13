@@ -13,34 +13,42 @@ import java.util.List;
 
 public class InventoryConfiguration implements ReloadableConfig {
 
-    @Description({ " ", "# Gui, dotyczące wyboru zakupu lub wynajmu domu" })
+    @Description( { " ", "# Gui, dotyczące wyboru zakupu lub wynajmu domu" })
     public SelectPurchaseOption selectPurchaseOption = new SelectPurchaseOption();
 
-    @Description({ " ", "# Gui, dotyczące wynajmu domu" })
+    @Description( { " ", "# Gui, dotyczące wynajmu domu" })
     public Rent rent = new Rent();
 
-    @Description({ " ", "# Gui, dotyczące panelu domu" })
-    public Panel panel = new Panel();
+    @Description( { " ", "# Gui, dotyczące panelu wynajętego domu" })
+    public RentedPanel rentedPanel = new RentedPanel();
 
-    @Description({ " ", "# Gui, dotyczące potwierdzania" })
+    @Description( { " ", "# Gui, dotyczące panelu zakupionego domu" })
+    public PurchasedPanel purchasedPanel = new PurchasedPanel();
+
+    @Description( { " ", "# Gui, dotyczące przedłużania wynajmu" })
+    public ExtendRent extendRent = new ExtendRent();
+
+    @Description( { " ", "# Gui, dotyczące potwierdzania" })
     public Confirm confirm = new Confirm();
 
-    @Description({ " ", "# Gui, dotyczące listy członków domu" })
-    @Description({ " ", "# To jest inventory, gdzie będą wyświetlane główki graczy, akcja po interakcji z główką zależy od implementacji. Nazwa tego inventory będzie taka jak ustawisz w implementacji np. w inventory od usuwania graczy", " " })
+    @Description( { " ", "# Gui, dotyczące listy członków domu" })
+    @Description( { " ", "# To jest inventory, gdzie będą wyświetlane główki graczy, akcja po interakcji z główką zależy od implementacji. Nazwa tego inventory będzie taka jak ustawisz w implementacji np. w inventory od usuwania graczy", " " })
     public ListOfHouseMembers listOfHouseMembers = new ListOfHouseMembers();
 
-    @Description({ " ", "# Gui, dotyczące listy współwłaścicieli domu" })
-    @Description({ " ", "# To jest inventory, gdzie będą wyświetlane główki graczy, akcja po interakcji z główką zależy od implementacji. Nazwa tego inventory będzie taka jak ustawisz w implementacji np. w inventory od usuwania współwłaścicieli", " " })
+    @Description( { " ", "# Gui, dotyczące listy współwłaścicieli domu" })
+    @Description( { " ", "# To jest inventory, gdzie będą wyświetlane główki graczy, akcja po interakcji z główką zależy od implementacji. Nazwa tego inventory będzie taka jak ustawisz w implementacji np. w inventory od usuwania współwłaścicieli", " " })
     public ListOfCoOwners listOfCoOwners = new ListOfCoOwners();
 
-    @Description({ " ", "# Gui, dotyczące usuwania gracza z domu" })
+    @Description( { " ", "# Gui, dotyczące usuwania gracza z domu" })
     public RemovePlayer removePlayer = new RemovePlayer();
 
-    @Description({ " ", "# Gui, dotyczące dodawania współwłaściciela" })
+    @Description( { " ", "# Gui, dotyczące dodawania współwłaściciela" })
     public CoOwner coOwner = new CoOwner();
 
-    @Description({ " ", "# Gui, dotyczące zmiany uprawnień gracza" })
+    @Description( { " ", "# Gui, dotyczące zmiany uprawnień gracza" })
     public ChangePermission changePermission = new ChangePermission();
+
+
 
     @Contextual
     public static class SelectPurchaseOption {
@@ -49,15 +57,30 @@ public class InventoryConfiguration implements ReloadableConfig {
         public int rows = 1;
 
         public ItemConfiguration buyItem = new ItemConfiguration(
-                3, "&aKup dom", List.of("&7Kliknij aby kupić dom"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.EMERALD_BLOCK, true
+                3,
+                "&aKup dom", List
+                .of("&7Kliknij aby kupić dom za &e{BUY_PRICE}&a."),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.CAMPFIRE,
+                true
         );
 
         public ItemConfiguration rentItem = new ItemConfiguration(
-                5, "&aWynajmij dom", List.of("&7Kliknij aby wynająć dom"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.REDSTONE_BLOCK, true
+                5,
+                "&aWynajmij dom",
+                List.of("&7Kliknij aby wynająć dom"),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.HOPPER,
+                true
         );
 
         public ItemConfiguration closeInventoryItem = new ItemConfiguration(
-                8, "&cZamknij", List.of("&7Kliknij aby zamknąć"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BARRIER, false
+                8,
+                "&cZamknij",
+                List.of("&7Kliknij aby zamknąć"),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.BARRIER,
+                false
         );
 
         public boolean fillEmptySlots = true;
@@ -119,7 +142,7 @@ public class InventoryConfiguration implements ReloadableConfig {
     }
 
     @Contextual
-    public static class Panel {
+    public static class RentedPanel {
         public String title = "&ePanel domu";
 
         public int rows = 5;
@@ -149,11 +172,59 @@ public class InventoryConfiguration implements ReloadableConfig {
         );
 
         public ItemConfiguration changeOwner = new ItemConfiguration(
-                24, "&aZmień właściciela", List.of("&7Kliknij aby zmienić właściciela domu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BLUE_DYE, false
+                24, "&aZmień właściciela", List.of("&7Kliknij aby zmienić najemce domu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BLUE_DYE, false
         );
 
-        public ItemConfiguration sellHouse = new ItemConfiguration(
-                31, "&aSprzedaj dom", List.of("&7Kliknij aby sprzedać dom"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.PINK_DYE, false
+        public ItemConfiguration changePanelObjectLocation = new ItemConfiguration(
+                31, "&aZmień lokalizację panelu", List.of("&7Kliknij aby zmienić lokalizację obiektu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.COMPASS, false
+        );
+
+        public ItemConfiguration closeInventoryItem = new ItemConfiguration(
+                40, "&cZamknij", List.of("&7Kliknij aby zamknąć"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BARRIER, false
+        );
+
+        public ItemConfiguration filler = new ItemConfiguration(
+                0, "&8", List.of(), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BLACK_STAINED_GLASS_PANE, false);
+
+        public boolean fillEmptySlots = true;
+    }
+
+    @Contextual
+    public static class PurchasedPanel {
+        public String title = "&ePanel domu";
+
+        public int rows = 5;
+
+        public ItemConfiguration addPlayerToHouse = new ItemConfiguration(
+                10, "&aDodaj gracza", List.of("&7Kliknij aby dodać gracza do domu", "&7Będziesz miał {TIME}, na kliknięcie PPM na gracza"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.LIME_DYE, false
+        );
+
+        public ItemConfiguration removePlayerFromHouse = new ItemConfiguration(
+                12, "&cUsuń gracza", List.of("&7Kliknij aby usunąć gracza z domu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.RED_DYE, false
+        );
+
+        public ItemConfiguration addCoOwner = new ItemConfiguration(
+                14, "&aDodaj współwłaściciela", List.of("&7Kliknij aby dodać współwłaściciela domu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.GREEN_DYE, false
+        );
+
+        public ItemConfiguration removeCoOwner = new ItemConfiguration(
+                16, "&cUsuń współwłaściciela", List.of("&7Kliknij aby usunąć współwłaściciela domu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.PURPLE_DYE, false
+        );
+
+        public ItemConfiguration changePlayerPermissions = new ItemConfiguration(
+                20, "&aZmień uprawnienia", List.of("&7Kliknij aby zmienić uprawnienia gracza"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.YELLOW_DYE, false
+        );
+
+        public ItemConfiguration sell = new ItemConfiguration(
+                22, "&aSprzedaj", List.of("&7Kliknij aby sprzedać dom"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.ORANGE_DYE, false
+        );
+
+        public ItemConfiguration changeOwner = new ItemConfiguration(
+                24, "&aZmień właściciela", List.of("&7Kliknij aby zmienić najemce domu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BLUE_DYE, false
+        );
+
+        public ItemConfiguration changePanelObjectLocation = new ItemConfiguration(
+                31, "&aZmień lokalizację panelu", List.of("&7Kliknij aby zmienić lokalizację obiektu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.COMPASS, false
         );
 
         public ItemConfiguration closeInventoryItem = new ItemConfiguration(
@@ -289,8 +360,59 @@ public class InventoryConfiguration implements ReloadableConfig {
         );
     }
 
+    @Contextual
+    public static class ExtendRent {
+        public String title = "&ePrzedłuż wynajem";
 
+        public int rows = 3;
 
+        public ItemConfiguration extendRentItem = new ItemConfiguration(
+                13, "&aPrzedłuż wynajem",
+                List.of(
+                        "&7Kliknij aby przedłużyć wynajem",
+                        "&7Aktualna ilość dni do zakończenia najmu wynosi &e{DAYS_LEFT}",
+                        "&7Wybrana ilość dni przedłużenia najmu wynosi &e{DAYS}",
+                        "&7Cena za wybraną ilość dni wynosi &e{PRICE}"
+                ),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.SUNFLOWER,
+                false
+        );
+
+        public ItemConfiguration addDayItem = new ItemConfiguration(
+                15, "&aDodaj dzień",
+                List.of("&7Kliknij aby dodać dzień do najmu"),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.EMERALD_BLOCK,
+                true
+        );
+
+        public ItemConfiguration removeDayItem = new ItemConfiguration(
+                11, "&aUsuń dzień",
+                List.of("&7Kliknij aby usunąć dzień z najmu"),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.REDSTONE_BLOCK,
+                true
+        );
+
+        public ItemConfiguration closeInventoryItem = new ItemConfiguration(
+                26, "&cZamknij",
+                List.of("&7Kliknij aby zamknąć"),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.BARRIER,
+                false
+        );
+
+        public boolean fillEmptySlots = true;
+
+        public ItemConfiguration filler = new ItemConfiguration(
+                0, "&8",
+                List.of(),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.BLACK_STAINED_GLASS_PANE,
+                false
+        );
+    }
 
     @Override
     public Resource resource(File folder) {

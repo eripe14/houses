@@ -5,8 +5,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Server;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-import java.util.concurrent.CompletableFuture;
-
 public class VaultHook implements Hook {
 
     private final Server server;
@@ -17,16 +15,14 @@ public class VaultHook implements Hook {
     }
 
     @Override
-    public CompletableFuture<Boolean> initialize() {
-        return CompletableFuture.supplyAsync(() -> {
-            RegisteredServiceProvider<Economy> economyProvider = this.server.getServicesManager().getRegistration(Economy.class);
+    public void initialize() {
+        RegisteredServiceProvider<Economy> economyProvider = this.server.getServicesManager().getRegistration(Economy.class);
 
-            if (economyProvider == null) {
-                throw new IllegalStateException("Vault founded, but you don't have a plugin that supports economy");
-            }
+        if (economyProvider == null) {
+            throw new IllegalStateException("Vault founded, but you don't have a plugin that supports economy");
+        }
 
-            return true;
-        });
+        this.economy = economyProvider.getProvider();
     }
 
     @Override

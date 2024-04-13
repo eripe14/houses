@@ -37,20 +37,13 @@ public class OpenDoorController implements Listener {
         Player player = event.getPlayer();
         List<Material> doors = this.pluginConfiguration.doors;
 
-        this.protectionHandler.canInteract(event, doors, player, HouseMemberPermission.OPEN_DOORS).whenComplete((result, throwable) -> {
-            if (throwable != null) {
-                System.out.println(throwable.getMessage());
+        this.protectionHandler.canInteractWithBlocks(event, doors, player, HouseMemberPermission.OPEN_DOORS).subscribe(result -> {
+            if (!result.cancelEvent()) {
                 return;
             }
 
-            if (!result.sendMessage() && !result.canInteract()) {
-                return;
-            }
-
-            if (result.sendMessage() && !result.canInteract()) {
-                event.setCancelled(true);
-                this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.permissionToOpenDoors);
-            }
+            event.setCancelled(true);
+            this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.permissionToOpenDoors);
         });
     }
 

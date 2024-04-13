@@ -48,6 +48,20 @@ public class MessageConfiguration implements ReloadableConfig {
 
         public String houseAlreadyExists = "&cDom o takim id &4({HOUSE_ID})&c już istnieje!";
 
+        public String boughtHouse = "&aZakupiono dom o id &e{HOUSE_ID}, &aza &e{BUY_PRICE}zł&a!";
+
+        public String notEnoughMoneyToBuy = "&cNie masz wystarczająco pieniędzy na zakup domu!";
+
+        public String requiredRentalTime = "&cCzas wynajmu nie może być mniejszy niż {MIN_RENT_TIME} dni!";
+
+        public String requiredExtendRentTime = "&cMinimalne przedłużenie wynajmu to 1 dzień!";
+
+        public String extendRentTime = "&aPrzedłużono wynajem domu o &e{DAYS}&a dni!";
+
+        public String rentedHouse = "&aWynajęto dom o id &e{HOUSE_ID} &aza &e{PRICE}&a, na okres &e{RENT_TIME}&a dni!";
+
+        public String notEnoughMoneyToRent = "&cNie masz wystarczająco pieniędzy na wynajem!";
+
         public String createdInvite = "&aKliknij na gracza, by dodać go do domu.";
 
         public String inviteExpired = "&cZaproszenie wygasło!";
@@ -56,13 +70,17 @@ public class MessageConfiguration implements ReloadableConfig {
 
         public String joinedHouse = "&aDołączono do domu gracza &e{INVITER}&a!";
 
-        public String requiredRentalTime = "&cCzas wynajmu nie może być niż {MIN_RENT_TIME}!";
-
-        public String rentedHouse = "&aWynajęto dom na &e{DAYS} &adni!";
-
         public String playerCancelledInvitation = "&cGracz &4{PLAYER}&c, odrzucił twoje zaproszenie do domu!";
 
         public String cancelledInvitation = "&cOdrzucono zaproszenie do domu od gracza &4{INVITER}&c!";
+
+        public String changedOwner = "&aGracz &e{PLAYER}&a potwierdził twoje zaproszenie -  został on nowym właścicielem domu!";
+
+        public String becomeOwner = "&aZostałeś nowym właścicielem domu!";
+
+        public String playerCancelledOwnerInvitation = "&cGracz &4{PLAYER}&c, odrzucił twoje zaproszenie do zostania właścicielem domu!";
+
+        public String cancelledOwnerInvitation = "&cOdrzucono zaproszenie do zostania właścicielem domu od gracza &4{INVITER}&c!";
 
         public String playerRemovedFromHouse = "&aGracz został usunięty z domu!";
 

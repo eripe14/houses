@@ -69,7 +69,7 @@ bukkit {
     name = "Houses"
     author = "eripe14"
     version = "${project.version}"
-    depend = listOf("FastAsyncWorldEdit", "WorldGuard", "ItemsAdder")
+    depend = listOf("FastAsyncWorldEdit", "WorldGuard", "ItemsAdder", "Vault")
 }
 
 tasks {

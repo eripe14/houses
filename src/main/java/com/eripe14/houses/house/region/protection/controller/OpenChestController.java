@@ -8,6 +8,7 @@ import com.eripe14.houses.notification.NotificationAnnouncer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -32,25 +33,18 @@ public class OpenChestController implements Listener {
         this.pluginConfiguration = pluginConfiguration;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         List<Material> chests = this.pluginConfiguration.chests;
 
-        this.protectionHandler.canInteract(event, chests, player, HouseMemberPermission.OPEN_CHESTS).whenComplete((result, throwable) -> {
-            if (throwable != null) {
-                System.out.println(throwable.getMessage());
+        this.protectionHandler.canInteractWithBlocks(event, chests, player, HouseMemberPermission.OPEN_CHESTS).subscribe(result -> {
+            if (!result.cancelEvent()) {
                 return;
             }
 
-            if (!result.sendMessage() && !result.canInteract()) {
-                return;
-            }
-
-            if (result.sendMessage() && !result.canInteract()) {
-                event.setCancelled(true);
-                this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.permissionToOpenChests);
-            }
+            event.setCancelled(true);
+            this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.permissionToOpenChests);
         });
     }
 

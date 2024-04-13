@@ -4,6 +4,7 @@ import dev.lone.itemsadder.api.CustomFurniture;
 import dev.lone.itemsadder.api.CustomStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import panda.std.Option;
 
 public class ItemsAdderHook {
 
@@ -20,6 +21,12 @@ public class ItemsAdderHook {
 
     public CustomFurniture spawnCustomFurniture(Player player, String furnitureNamespacedKey) {
         return CustomFurniture.spawn(furnitureNamespacedKey, player.getLocation().getBlock());
+    }
+
+    public Option<CustomStack> getCustomStack(ItemStack itemStack) {
+        CustomStack customStack = CustomStack.byItemStack(itemStack);
+
+        return Option.of(customStack).orElse(Option::none);
     }
 
     public boolean isItemsAdderFurniture(String furnitureNamespacedKey) {
