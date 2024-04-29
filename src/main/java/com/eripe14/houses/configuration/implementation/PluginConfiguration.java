@@ -84,6 +84,9 @@ public class PluginConfiguration implements ReloadableConfig {
     @Description({ " ", "# Procent kwoty kupna, która zostanie zwrócona po sprzedaży domu"})
     public int percentOfPurchasePriceReturned = 70;
 
+    @Description({ " ", "# Id npc z Citizens, który będzie odpowiedzialny za rozpoczęcie remontu domu"})
+    public int id;
+
     @Override
     public Resource resource(File folder) {
         return Source.of(folder, "config.yml");

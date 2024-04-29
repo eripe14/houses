@@ -21,7 +21,7 @@ public class HousePurchaseService {
         this.pluginConfiguration = pluginConfiguration;
     }
 
-    public boolean purchaseHouse(Player player, House house) {
+    public synchronized boolean purchaseHouse(Player player, House house) {
         Owner owner = new Owner(player.getUniqueId(), player.getName());
         house.setOwner(owner);
 

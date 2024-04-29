@@ -12,21 +12,23 @@
 regions:
     plot_exclusive_apartment_domek:
         members: {}
-        flags: {use: allow, chest-access: allow, block-place: allow}
+        flags: {use: allow, passthrough: allow, block-break: allow, chest-access: allow,
+            block-place: allow}
         owners: {}
         type: poly2d
         priority: 10
         max-y: 73
         min-y: 67
         points:
-        - {x: 151, z: -114}
         - {x: 161, z: -114}
-        - {x: 161, z: -104}
+        - {x: 151, z: -114}
         - {x: 151, z: -104}
-    house_exclusive_apartment_domek:
-        parent: plot_exclusive_apartment_domek
+        - {x: 161, z: -104}
+    house_exclusive_apartment_domke:
+        parent: plot_exclusive_apartment_domke
         members: {}
-        flags: {use: allow, chest-access: allow, block-place: allow}
+        flags: {use: allow, passthrough: allow, block-break: allow, chest-access: allow,
+            block-place: allow}
         owners: {}
         type: poly2d
         priority: 10
@@ -37,10 +39,38 @@ regions:
         - {x: 153, z: -112}
         - {x: 159, z: -112}
         - {x: 159, z: -106}
+    house_exclusive_apartment_domek:
+        parent: plot_exclusive_apartment_domek
+        members: {}
+        flags: {use: allow, passthrough: allow, block-break: allow, chest-access: allow,
+            block-place: allow}
+        owners: {}
+        type: poly2d
+        priority: 10
+        max-y: 73
+        min-y: 67
+        points:
+        - {x: 159, z: -112}
+        - {x: 153, z: -112}
+        - {x: 153, z: -106}
+        - {x: 159, z: -106}
     __global__:
         members: {}
-        flags: {use: deny, ia-vehicle-place: allow, chest-access: deny, block-place: deny,
-            ia-vehicle-remove: deny}
+        flags: {use: deny, block-break: deny, chest-access: deny, block-place: deny}
         owners: {}
         type: global
         priority: 0
+    plot_exclusive_apartment_domke:
+        members: {}
+        flags: {use: allow, passthrough: allow, block-break: allow, chest-access: allow,
+            block-place: allow}
+        owners: {}
+        type: poly2d
+        priority: 10
+        max-y: 73
+        min-y: 67
+        points:
+        - {x: 151, z: -114}
+        - {x: 161, z: -114}
+        - {x: 161, z: -104}
+        - {x: 151, z: -104}

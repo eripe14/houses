@@ -2,6 +2,7 @@ package com.eripe14.houses.hook.implementation;
 
 import dev.lone.itemsadder.api.CustomFurniture;
 import dev.lone.itemsadder.api.CustomStack;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import panda.std.Option;
@@ -19,8 +20,8 @@ public class ItemsAdderHook {
         player.getInventory().addItem(itemStack);
     }
 
-    public CustomFurniture spawnCustomFurniture(Player player, String furnitureNamespacedKey) {
-        return CustomFurniture.spawn(furnitureNamespacedKey, player.getLocation().getBlock());
+    public CustomFurniture spawnCustomFurniture(Location location, String furnitureNamespacedKey) {
+        return CustomFurniture.spawn(furnitureNamespacedKey, location.getBlock());
     }
 
     public Option<CustomStack> getCustomStack(ItemStack itemStack) {
@@ -31,6 +32,16 @@ public class ItemsAdderHook {
 
     public boolean isItemsAdderFurniture(String furnitureNamespacedKey) {
         return CustomFurniture.isInRegistry(furnitureNamespacedKey);
+    }
+
+    public boolean isItemsAdderCustomRecipe(ItemStack itemStack) {
+        CustomStack customStack = CustomFurniture.byItemStack(itemStack);
+
+        if (customStack == null) {
+            return false;
+        }
+
+        return CustomFurniture.isInRegistry(customStack.getNamespacedID());
     }
 
 }

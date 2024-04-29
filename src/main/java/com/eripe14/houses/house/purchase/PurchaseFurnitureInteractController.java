@@ -6,6 +6,7 @@ import com.eripe14.houses.house.HouseService;
 import com.eripe14.houses.house.inventory.impl.RentInventory;
 import com.eripe14.houses.house.inventory.impl.SelectPurchaseInventory;
 import dev.lone.itemsadder.api.CustomFurniture;
+import dev.lone.itemsadder.api.Events.FurnitureBreakEvent;
 import dev.lone.itemsadder.api.Events.FurnitureInteractEvent;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -62,6 +63,29 @@ public class PurchaseFurnitureInteractController implements Listener {
         }
 
         this.selectPurchaseInventory.openInventory(player, house);
+    }
+
+    @EventHandler
+    public void onFurnitureBreak(FurnitureBreakEvent event) {
+        CustomFurniture furniture = event.getFurniture();
+        Entity bukkitEntity = event.getBukkitEntity();
+        Location location = bukkitEntity.getLocation();
+
+        if (furniture == null) {
+            return;
+        }
+
+        if (!furniture.getNamespacedID().equalsIgnoreCase(this.pluginConfiguration.itemsAdderPurchaseNamespacedId)) {
+            return;
+        }
+
+        Option<House> houseOption = this.houseService.getHouse(location);
+
+        if (houseOption.isEmpty()) {
+            return;
+        }
+
+        event.setCancelled(true);
     }
 
 }

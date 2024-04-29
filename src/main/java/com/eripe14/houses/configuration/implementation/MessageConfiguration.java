@@ -74,6 +74,10 @@ public class MessageConfiguration implements ReloadableConfig {
 
         public String cancelledInvitation = "&cOdrzucono zaproszenie do domu od gracza &4{INVITER}&c!";
 
+        public String createdOwnerInvite = "&aKliknij na gracza, by mianować go właścicielem domu.";
+
+        public String playerMustMemberToBecomeOwner = "&cGracz musi być członkiem domu, żeby zostać właścicielem!";
+
         public String changedOwner = "&aGracz &e{PLAYER}&a potwierdził twoje zaproszenie -  został on nowym właścicielem domu!";
 
         public String becomeOwner = "&aZostałeś nowym właścicielem domu!";
@@ -111,6 +115,12 @@ public class MessageConfiguration implements ReloadableConfig {
         public String permissionToOpenChests = "&cNie masz uprawnień do otwierania skrzyń w tym domu!";
 
         public String permissionToPlaceFurniture = "&cNie masz uprawnień do stawiania mebli w tym domu!";
+
+        public String permissionToBreakFurniture = "&cNie masz uprawnień do niszczenia mebli w tym domu!";
+
+        public String youNeedToBeOwner = "&cNie możesz wykonać tej akcji! Żeby to zrobić musisz być właścicielem domu!";
+
+        public String soldHouse = "&aSprzedano dom za &e{SELL_PRICE}zł&a!";
     }
 
     @Contextual

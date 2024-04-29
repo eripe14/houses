@@ -59,7 +59,7 @@ public class ItemConfiguration {
 
         for (Formatter formatter : formatters) {
             tempName = formatter.format(tempName);
-            tempLore = tempLore.stream().map(formatter::format).collect(Collectors.toList());
+            tempLore = tempLore.stream().map(formatter::format).toList();
         }
 
         Component name = Legacy.RESET_ITALIC.append(this.miniMessage.deserialize(tempName));

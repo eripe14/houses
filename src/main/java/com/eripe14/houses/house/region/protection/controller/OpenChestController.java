@@ -3,6 +3,7 @@ package com.eripe14.houses.house.region.protection.controller;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import com.eripe14.houses.house.member.HouseMemberPermission;
+import com.eripe14.houses.house.region.protection.ProtectionCause;
 import com.eripe14.houses.house.region.protection.ProtectionHandler;
 import com.eripe14.houses.notification.NotificationAnnouncer;
 import org.bukkit.Material;
@@ -39,7 +40,7 @@ public class OpenChestController implements Listener {
         List<Material> chests = this.pluginConfiguration.chests;
 
         this.protectionHandler.canInteractWithBlocks(event, chests, player, HouseMemberPermission.OPEN_CHESTS).subscribe(result -> {
-            if (!result.cancelEvent()) {
+            if (result.result() != ProtectionCause.CANCEL_EVENT_WITH_MESSAGE) {
                 return;
             }
 

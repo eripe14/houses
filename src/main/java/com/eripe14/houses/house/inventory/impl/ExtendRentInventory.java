@@ -89,7 +89,7 @@ public class ExtendRentInventory extends Inventory {
                 }
 
                 Consumer<UUID> confirm = (confirmPlayerUuid) -> {
-                    Rent extendRent = this.rentService.createRent(confirmPlayerUuid, house, days.get());
+                    Rent extendRent = this.rentService.createRent(confirmPlayerUuid, house, days.get() + currentDays);
 
                     this.rentService.addRent(extendRent);
                     this.houseService.rentHouse(player, house, extendRent);

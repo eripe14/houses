@@ -2,6 +2,7 @@ package com.eripe14.houses.house;
 
 import com.eripe14.houses.house.member.HouseMember;
 import com.eripe14.houses.house.owner.Owner;
+import com.eripe14.houses.house.region.HouseRegion;
 import com.eripe14.houses.house.rent.Rent;
 import panda.std.Option;
 
@@ -86,14 +87,14 @@ public class House {
     @Override
     public String toString() {
         return "House{" +
-                "creationDate=" + this.creationDate +
-                ", houseId='" + this.houseId + '\'' +
-                ", owner=" + this.owner +
-                ", members=" + this.members.values() +
-                ", region=" + this.region +
-                ", rent=" + this.rent +
-                ", buyPrice=" + this.buyPrice +
-                ", dailyRentalPrice=" + this.dailyRentalPrice +
+                "creationDate=" + creationDate +
+                ", houseId='" + houseId + '\'' +
+                ", members=" + members +
+                ", region=" + region +
+                ", buyPrice=" + buyPrice +
+                ", dailyRentalPrice=" + dailyRentalPrice +
+                ", owner=" + owner +
+                ", rent=" + rent +
                 '}';
     }
 

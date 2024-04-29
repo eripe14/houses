@@ -175,10 +175,6 @@ public class InventoryConfiguration implements ReloadableConfig {
                 24, "&aZmień właściciela", List.of("&7Kliknij aby zmienić najemce domu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BLUE_DYE, false
         );
 
-        public ItemConfiguration changePanelObjectLocation = new ItemConfiguration(
-                31, "&aZmień lokalizację panelu", List.of("&7Kliknij aby zmienić lokalizację obiektu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.COMPASS, false
-        );
-
         public ItemConfiguration closeInventoryItem = new ItemConfiguration(
                 40, "&cZamknij", List.of("&7Kliknij aby zamknąć"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BARRIER, false
         );
@@ -191,7 +187,7 @@ public class InventoryConfiguration implements ReloadableConfig {
 
     @Contextual
     public static class PurchasedPanel {
-        public String title = "&ePanel domu";
+        public String title = "&ePanel domu kupionego";
 
         public int rows = 5;
 
@@ -221,10 +217,6 @@ public class InventoryConfiguration implements ReloadableConfig {
 
         public ItemConfiguration changeOwner = new ItemConfiguration(
                 24, "&aZmień właściciela", List.of("&7Kliknij aby zmienić najemce domu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BLUE_DYE, false
-        );
-
-        public ItemConfiguration changePanelObjectLocation = new ItemConfiguration(
-                31, "&aZmień lokalizację panelu", List.of("&7Kliknij aby zmienić lokalizację obiektu"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.COMPASS, false
         );
 
         public ItemConfiguration closeInventoryItem = new ItemConfiguration(

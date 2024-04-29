@@ -6,8 +6,8 @@ import java.util.UUID;
 
 public class Rent {
 
+    private UUID renter;
     private final String houseId;
-    private final UUID renter;
     private final int pricePerDay;
     private final Duration rentDuration;
     private final Instant endOfRent;
@@ -20,12 +20,16 @@ public class Rent {
         this.endOfRent = Instant.now().plus(rentDuration);
     }
 
-    public String getHouseId() {
-        return this.houseId;
+    public void setRenter(UUID renter) {
+        this.renter = renter;
     }
 
     public UUID getRenter() {
         return this.renter;
+    }
+
+    public String getHouseId() {
+        return this.houseId;
     }
 
     public int getPricePerDay() {

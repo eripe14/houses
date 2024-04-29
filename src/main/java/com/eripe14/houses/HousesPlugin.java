@@ -15,7 +15,6 @@ import com.eripe14.houses.hook.implementation.ItemsAdderHook;
 import com.eripe14.houses.hook.implementation.VaultHook;
 import com.eripe14.houses.house.HouseCommand;
 import com.eripe14.houses.house.HouseService;
-import com.eripe14.houses.house.controller.HousePanelController;
 import com.eripe14.houses.house.inventory.action.impl.AddCoOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.AddPlayerAction;
 import com.eripe14.houses.house.inventory.action.impl.ChangeOwnerAction;
@@ -23,6 +22,7 @@ import com.eripe14.houses.house.inventory.action.impl.ChangePermissionsAction;
 import com.eripe14.houses.house.inventory.action.impl.ExtendRentAction;
 import com.eripe14.houses.house.inventory.action.impl.RemoveCoOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.RemovePlayerAction;
+import com.eripe14.houses.house.inventory.action.impl.SellHouseAction;
 import com.eripe14.houses.house.inventory.impl.ChangePermissionsInventory;
 import com.eripe14.houses.house.inventory.impl.ConfirmInventory;
 import com.eripe14.houses.house.inventory.impl.ExtendRentInventory;
@@ -35,12 +35,15 @@ import com.eripe14.houses.house.inventory.impl.SelectPurchaseInventory;
 import com.eripe14.houses.house.invite.HouseInviteController;
 import com.eripe14.houses.house.invite.HouseInviteService;
 import com.eripe14.houses.house.member.HouseMemberService;
+import com.eripe14.houses.house.panel.HousePanelController;
 import com.eripe14.houses.house.purchase.HousePurchaseService;
+import com.eripe14.houses.house.purchase.HouseSellService;
 import com.eripe14.houses.house.purchase.PurchaseFurnitureInteractController;
 import com.eripe14.houses.house.region.PolygonalRegionServiceImpl;
 import com.eripe14.houses.house.region.protection.ProtectionHandler;
 import com.eripe14.houses.house.region.protection.ProtectionHandlerImpl;
 import com.eripe14.houses.house.region.protection.ProtectionService;
+import com.eripe14.houses.house.region.protection.controller.BreakFurnitureController;
 import com.eripe14.houses.house.region.protection.controller.OpenChestController;
 import com.eripe14.houses.house.region.protection.controller.OpenDoorController;
 import com.eripe14.houses.house.region.protection.controller.PlaceFurnitureController;
@@ -102,6 +105,7 @@ public class HousesPlugin extends JavaPlugin {
     private HouseInviteService houseInviteService;
     private HouseMemberService houseMemberService;
     private HousePurchaseService housePurchaseService;
+    private HouseSellService houseSellService;
 
     private RentService rentService;
 
@@ -118,6 +122,7 @@ public class HousesPlugin extends JavaPlugin {
     private ChangePermissionsAction changePermissionsAction;
     private ExtendRentAction extendRentAction;
     private ChangeOwnerAction changeOwnerAction;
+    private SellHouseAction sellHouseAction;
 
     private ConfirmInventory confirmInventory;
     private SelectPurchaseInventory selectPurchaseInventory;
@@ -181,6 +186,13 @@ public class HousesPlugin extends JavaPlugin {
         this.houseInviteService = new HouseInviteService(this.eventCaller, this.pluginConfiguration);
         this.houseMemberService = new HouseMemberService(this.houseService, this.pluginConfiguration);
         this.housePurchaseService = new HousePurchaseService(this.houseService, this.purchaseService, this.pluginConfiguration);
+        this.houseSellService = new HouseSellService(
+                this.houseService,
+                this.itemsAdderHook,
+                this.schematicService,
+                this.purchaseService,
+                this.pluginConfiguration
+       );
 
         this.rentService = new RentService();
 
@@ -188,7 +200,8 @@ public class HousesPlugin extends JavaPlugin {
         this.protectionHandler = new ProtectionHandlerImpl(
                 this.houseService,
                 this.houseMemberService,
-                this.protectionService
+                this.protectionService,
+                this.itemsAdderHook
         );
 
         this.alertService = new AlertService();
@@ -298,10 +311,17 @@ public class HousesPlugin extends JavaPlugin {
         this.changeOwnerAction = new ChangeOwnerAction(
                 this.houseMemberService,
                 this.houseInviteService,
+                this.houseService,
+                this.rentService,
                 this.confirmInventory,
                 this.notificationAnnouncer,
-                this.messageConfiguration,
-                this.pluginConfiguration
+                this.pluginConfiguration,
+                this.messageConfiguration
+        );
+        this.sellHouseAction = new SellHouseAction(
+                this.houseSellService,
+                this.notificationAnnouncer,
+                this.messageConfiguration
         );
 
         this.rentedPanelInventory = new RentedPanelInventory(
@@ -314,10 +334,22 @@ public class HousesPlugin extends JavaPlugin {
                 this.extendRentAction,
                 this.changeOwnerAction,
                 this.inventoryConfiguration,
-                this.pluginConfiguration
+                this.notificationAnnouncer,
+                this.pluginConfiguration,
+                this.messageConfiguration
         );
         this.purchasedPanelInventory = new PurchasedPanelInventory(
-
+            this.scheduler,
+                this.addPlayerAction,
+                this.addCoOwnerAction,
+                this.removePlayerAction,
+                this.removeCoOwnerAction,
+                this.changePermissionsAction,
+                this.changeOwnerAction,
+                this.sellHouseAction,
+                this.notificationAnnouncer,
+                this.inventoryConfiguration,
+                this.messageConfiguration
         );
 
         Stream.of(
@@ -326,7 +358,11 @@ public class HousesPlugin extends JavaPlugin {
                 new RentController(this.rentService, this.pluginConfiguration, this.messageConfiguration, this.notificationAnnouncer),
                 new AlertController(this.alertService, this.alertHandler, this.pluginConfiguration),
                 new PlaceFurnitureController(
-                        this.itemsAdderHook,
+                        this.protectionHandler,
+                        this.notificationAnnouncer,
+                        this.messageConfiguration
+                ),
+                new BreakFurnitureController(
                         this.protectionHandler,
                         this.notificationAnnouncer,
                         this.messageConfiguration
@@ -345,6 +381,7 @@ public class HousesPlugin extends JavaPlugin {
                 ),
                 new HousePanelController(
                         this.houseService,
+                        this.houseMemberService,
                         this.protectionService,
                         this.rentedPanelInventory,
                         this.purchasedPanelInventory,

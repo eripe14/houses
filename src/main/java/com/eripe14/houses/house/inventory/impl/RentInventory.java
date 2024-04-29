@@ -87,7 +87,7 @@ public class RentInventory extends Inventory {
             }
 
             GuiAction<InventoryClickEvent> rentAction = (event) -> {
-                if (days.get() <= minRentDays) {
+                if (days.get() < minRentDays) {
                     this.notificationAnnouncer.sendMessage(player, houseMessage.requiredRentalTime, formatter);
                     return;
                 }

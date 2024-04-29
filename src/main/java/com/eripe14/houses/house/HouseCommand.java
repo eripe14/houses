@@ -7,6 +7,9 @@ import com.eripe14.houses.hook.implementation.ItemsAdderHook;
 import com.eripe14.houses.house.inventory.impl.RentInventory;
 import com.eripe14.houses.house.inventory.impl.RentedPanelInventory;
 import com.eripe14.houses.house.region.FinalRegionResult;
+import com.eripe14.houses.house.region.HouseDistrict;
+import com.eripe14.houses.house.region.HouseRegion;
+import com.eripe14.houses.house.region.HouseType;
 import com.eripe14.houses.house.region.PolygonalRegionServiceImpl;
 import com.eripe14.houses.notification.NotificationAnnouncer;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -19,7 +22,10 @@ import dev.rollczi.litecommands.annotations.command.Command;
 import dev.rollczi.litecommands.annotations.context.Context;
 import dev.rollczi.litecommands.annotations.execute.Execute;
 import dev.rollczi.litecommands.annotations.permission.Permission;
+import org.bukkit.Location;
 import org.bukkit.Server;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import panda.std.Option;
 import panda.utilities.text.Formatter;
@@ -110,8 +116,18 @@ public class HouseCommand {
                 return;
             }
 
-            CustomFurniture purchaseFurniture = this.itemsAdderHook.spawnCustomFurniture(player, this.pluginConfiguration.itemsAdderPurchaseNamespacedId);
-            House house = this.houseService.createHouse(houseId, schematicName, district, type, player, result, purchaseFurniture, rentalPrice, buyPrice.orElse(0));
+            CustomFurniture purchaseFurniture = this.itemsAdderHook.spawnCustomFurniture(player.getLocation(), this.pluginConfiguration.itemsAdderPurchaseNamespacedId);
+            House house = this.houseService.createHouse(
+                    houseId,
+                    schematicName,
+                    district,
+                    type,
+                    result,
+                    player.getLocation(),
+                    purchaseFurniture,
+                    rentalPrice,
+                    buyPrice.orElse(0)
+            );
 
             this.houseService.addHouse(house);
             this.polygonalRegionService.saveRegions(player.getWorld(), result, schematicName);
@@ -144,6 +160,24 @@ public class HouseCommand {
         house.getMembers().forEach((uuid, houseMember) -> {
             player.sendMessage(Objects.requireNonNull(this.server.getPlayer(houseMember.getMemberUuid())).getName());
         });
+
+        HouseRegion region = house.getRegion();
+        for (Entity entity : player.getWorld().getEntities()) {
+            for (Location placedFurnitureLocation : region.getPlacedFurnitureLocations()) {
+                if (!(entity instanceof ArmorStand)) {
+                    return;
+                }
+
+                ((ArmorStand) entity).setInvisible(true);
+                player.sendMessage(entity.getName());
+
+                if (!entity.getLocation().equals(placedFurnitureLocation)) {
+                    return;
+                }
+
+                ((ArmorStand) entity).setInvisible(true);
+            }
+        }
 
         player.sendMessage("owner: " + this.server.getPlayer(house.getOwner().get().getUuid()).getName());
         player.sendMessage("houses: " + this.houseService.getAllHouses().size());

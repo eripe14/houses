@@ -2,6 +2,9 @@ package com.eripe14.houses.house;
 
 import com.eripe14.houses.house.owner.Owner;
 import com.eripe14.houses.house.region.FinalRegionResult;
+import com.eripe14.houses.house.region.HouseDistrict;
+import com.eripe14.houses.house.region.HouseRegion;
+import com.eripe14.houses.house.region.HouseType;
 import com.eripe14.houses.house.rent.Rent;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -25,8 +28,8 @@ public class HouseService {
             String defaultSchematicName,
             HouseDistrict district,
             HouseType type,
-            Player ownerPlayer,
             FinalRegionResult result,
+            Location purchaseFurnitureLocation,
             CustomFurniture purchaseFurniture,
             int dailyRentalPrice,
             int buyPrice
@@ -37,10 +40,12 @@ public class HouseService {
         HouseRegion region = new HouseRegion(
                 houseId,
                 defaultSchematicName,
+                purchaseFurnitureLocation.getWorld(),
                 type,
                 district,
                 (ProtectedPolygonalRegion) plotRegion,
                 (ProtectedPolygonalRegion) houseRegion,
+                purchaseFurnitureLocation,
                 purchaseFurniture
         );
 
@@ -61,6 +66,14 @@ public class HouseService {
         house.setRent(rent);
         house.setOwner(owner);
         this.addHouse(house);
+    }
+
+    public void resetHouse(House house) {
+        house.setRent(null);
+        house.setOwner(null);
+        house.getMembers().clear();
+
+        this.houses.put(house.getHouseId(), house);
     }
 
     public void addHouse(House house) {

@@ -35,6 +35,12 @@ public class HouseMemberService {
         this.houseService.addHouse(house);
     }
 
+    public void addDefaultMember(House house, HouseMember member) {
+        member.setPermission(this.pluginConfiguration.defaultHouseMemberPermission);
+        house.getMembers().put(member.getMemberUuid(), member);
+        this.houseService.addHouse(house);
+    }
+
     public void removeHouseMember(House house, UUID uuid) {
         house.getMembers().remove(uuid);
         this.houseService.addHouse(house);
@@ -46,6 +52,16 @@ public class HouseMemberService {
         house.setOwner(owner);
         house.getMembers().remove(member.getMemberUuid());
         this.houseService.addHouse(house);
+    }
+
+    public boolean isCoOwner(House house, UUID uuid) {
+        Option<HouseMember> houseMemberOption = Option.of(house.getMembers().get(uuid));
+
+        if (houseMemberOption.isEmpty()) {
+            return false;
+        }
+
+        return houseMemberOption.get().isCoOwner();
     }
 
     public void addCoOwner(House house, HouseMember member) {

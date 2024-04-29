@@ -3,7 +3,7 @@ package com.eripe14.houses.house.region.protection;
 import com.eripe14.houses.house.member.HouseMemberPermission;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import panda.std.reactive.Completable;
 
@@ -18,8 +18,8 @@ public interface ProtectionHandler {
             HouseMemberPermission permission
     );
 
-    Completable<ProtectionInteractResult> canBuild(
-            BlockPlaceEvent event,
+    Completable<ProtectionInteractResult> canActionWithBlock(
+            BlockEvent event,
             Player player,
             HouseMemberPermission permission
     );

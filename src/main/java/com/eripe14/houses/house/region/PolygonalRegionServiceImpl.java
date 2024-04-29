@@ -1,8 +1,6 @@
 package com.eripe14.houses.house.region;
 
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
-import com.eripe14.houses.house.HouseDistrict;
-import com.eripe14.houses.house.HouseType;
 import com.eripe14.houses.scheduler.Scheduler;
 import com.eripe14.houses.schematic.SchematicService;
 import com.sk89q.worldedit.IncompleteRegionException;
@@ -37,7 +35,14 @@ public class PolygonalRegionServiceImpl implements RegionService {
     private final SchematicService schematicService;
     private final PluginConfiguration pluginConfiguration;
 
-    public PolygonalRegionServiceImpl(Server server, Scheduler scheduler, WorldEdit worldEdit, WorldGuard worldGuard, SchematicService schematicService, PluginConfiguration pluginConfiguration) {
+    public PolygonalRegionServiceImpl(
+            Server server,
+            Scheduler scheduler,
+            WorldEdit worldEdit,
+            WorldGuard worldGuard,
+            SchematicService schematicService,
+            PluginConfiguration pluginConfiguration
+    ) {
         this.server = server;
         this.scheduler = scheduler;
         this.worldEdit = worldEdit;
@@ -61,6 +66,11 @@ public class PolygonalRegionServiceImpl implements RegionService {
         manager.addRegion(houseRegion);
 
         this.schematicService.pasteSchematic(world, houseRegion.getMinimumPoint(), schematicFileName);
+    }
+
+    @Override
+    public void resetRegion(HouseRegion houseRegion) {
+
     }
 
     @Override
@@ -96,14 +106,16 @@ public class PolygonalRegionServiceImpl implements RegionService {
                 houseRegion.setPriority(10);
                 houseRegion.setParent(plotRegion);
 
-                plotRegion.setFlag(Flags.CHEST_ACCESS, StateFlag.State.ALLOW);
-                plotRegion.setFlag(Flags.USE, StateFlag.State.ALLOW);
-                plotRegion.setFlag(Flags.BLOCK_PLACE, StateFlag.State.ALLOW);
-                houseRegion.setFlag(Flags.CHEST_ACCESS, StateFlag.State.ALLOW);
-                houseRegion.setFlag(Flags.USE, StateFlag.State.ALLOW);
-                houseRegion.setFlag(Flags.BLOCK_PLACE, StateFlag.State.ALLOW);
+                StateFlag[] flags = {Flags.CHEST_ACCESS, Flags.USE, Flags.BLOCK_PLACE, Flags.BLOCK_BREAK, Flags.PASSTHROUGH};
 
-                finalRegionResultCompletableFuture.complete(new FinalRegionResult(true, Option.of(plotRegion), Option.of(houseRegion)));
+                for (StateFlag flag : flags) {
+                    plotRegion.setFlag(flag, StateFlag.State.ALLOW);
+                    houseRegion.setFlag(flag, StateFlag.State.ALLOW);
+                }
+
+                finalRegionResultCompletableFuture.complete(
+                        new FinalRegionResult(true, Option.of(plotRegion), Option.of(houseRegion))
+                );
                 this.scheduler.sync(() -> this.server.dispatchCommand(player, "/sel"));
             } catch (ProtectedRegion.CircularInheritanceException e) {
                 finalRegionResultCompletableFuture.complete(failure);
