@@ -1,9 +1,12 @@
 package com.eripe14.houses.house.inventory.action.impl;
 
 import com.eripe14.houses.alert.Alert;
+import com.eripe14.houses.alert.AlertFormatter;
 import com.eripe14.houses.alert.AlertHandler;
 import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
+import com.eripe14.houses.history.HistoryUser;
+import com.eripe14.houses.history.HistoryUserService;
 import com.eripe14.houses.house.House;
 import com.eripe14.houses.house.inventory.action.InventoryClickAction;
 import com.eripe14.houses.house.inventory.impl.ListOfHouseMembersInventory;
@@ -13,7 +16,6 @@ import com.eripe14.houses.notification.NotificationAnnouncer;
 import dev.triumphteam.gui.guis.Gui;
 import org.bukkit.entity.Player;
 import panda.std.Option;
-import panda.utilities.text.Formatter;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -21,6 +23,7 @@ import java.util.function.Consumer;
 public class RemovePlayerAction implements InventoryClickAction {
 
     private final HouseMemberService houseMemberService;
+    private final HistoryUserService historyUserService;
     private final AlertHandler alertHandler;
     private final ListOfHouseMembersInventory listOfHouseMembersInventory;
     private final NotificationAnnouncer notificationAnnouncer;
@@ -29,6 +32,7 @@ public class RemovePlayerAction implements InventoryClickAction {
 
     public RemovePlayerAction(
             HouseMemberService houseMemberService,
+            HistoryUserService historyUserService,
             AlertHandler alertHandler,
             ListOfHouseMembersInventory listOfHouseMembersInventory,
             NotificationAnnouncer notificationAnnouncer,
@@ -36,6 +40,7 @@ public class RemovePlayerAction implements InventoryClickAction {
             InventoryConfiguration inventoryConfiguration
     ) {
         this.houseMemberService = houseMemberService;
+        this.historyUserService = historyUserService;
         this.alertHandler = alertHandler;
         this.listOfHouseMembersInventory = listOfHouseMembersInventory;
         this.notificationAnnouncer = notificationAnnouncer;
@@ -54,7 +59,7 @@ public class RemovePlayerAction implements InventoryClickAction {
 
             HouseMember houseMember = houseMemberOption.get();
 
-            Formatter formatter = new Formatter();
+            AlertFormatter formatter = new AlertFormatter();
             formatter.register("{OWNER}", house.getOwner().get().getName());
             formatter.register("{PLAYER}", houseMember.getMemberName());
 
@@ -70,6 +75,17 @@ public class RemovePlayerAction implements InventoryClickAction {
             this.alertHandler.sendAlertIfPlayerNotOnline(uuidToRemove, alert);
             this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.playerRemovedFromHouse);
             gui.close(player);
+
+            Option<HistoryUser> userOption = this.historyUserService.getUser(uuidToRemove);
+
+            if (userOption.isEmpty()) {
+                return;
+            }
+
+            HistoryUser user = userOption.get();
+            user.addLeftHouse(house.getHouseId());
+
+            this.historyUserService.addUser(user);
         };
 
         return (playerAction) -> {

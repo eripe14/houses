@@ -7,11 +7,13 @@ import com.eripe14.houses.house.House;
 import com.eripe14.houses.house.inventory.Inventory;
 import com.eripe14.houses.house.inventory.action.impl.AddCoOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.AddPlayerAction;
+import com.eripe14.houses.house.inventory.action.impl.BuyHouseAction;
 import com.eripe14.houses.house.inventory.action.impl.ChangeOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.ChangePermissionsAction;
 import com.eripe14.houses.house.inventory.action.impl.ExtendRentAction;
 import com.eripe14.houses.house.inventory.action.impl.RemoveCoOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.RemovePlayerAction;
+import com.eripe14.houses.house.member.HouseMemberService;
 import com.eripe14.houses.house.owner.Owner;
 import com.eripe14.houses.notification.NotificationAnnouncer;
 import com.eripe14.houses.scheduler.Scheduler;
@@ -33,6 +35,9 @@ public class RentedPanelInventory extends Inventory {
     private final ChangePermissionsAction changePermissionsAction;
     private final ExtendRentAction extendRentAction;
     private final ChangeOwnerAction changeOwnerAction;
+    private final BuyHouseAction buyHouseAction;
+    private final HouseMemberService houseMemberService;
+    private final MenageRenovationInventory menageRenovationInventory;
     private final InventoryConfiguration inventoryConfiguration;
     private final NotificationAnnouncer notificationAnnouncer;
     private final PluginConfiguration pluginConfiguration;
@@ -47,6 +52,9 @@ public class RentedPanelInventory extends Inventory {
             ChangePermissionsAction changePermissionsAction,
             ExtendRentAction extendRentAction,
             ChangeOwnerAction changeOwnerAction,
+            BuyHouseAction buyHouseAction,
+            HouseMemberService houseMemberService,
+            MenageRenovationInventory menageRenovationInventory,
             InventoryConfiguration inventoryConfiguration,
             NotificationAnnouncer notificationAnnouncer,
             PluginConfiguration pluginConfiguration,
@@ -60,6 +68,9 @@ public class RentedPanelInventory extends Inventory {
         this.changePermissionsAction = changePermissionsAction;
         this.extendRentAction = extendRentAction;
         this.changeOwnerAction = changeOwnerAction;
+        this.buyHouseAction = buyHouseAction;
+        this.houseMemberService = houseMemberService;
+        this.menageRenovationInventory = menageRenovationInventory;
         this.inventoryConfiguration = inventoryConfiguration;
         this.notificationAnnouncer = notificationAnnouncer;
         this.pluginConfiguration = pluginConfiguration;
@@ -89,7 +100,7 @@ public class RentedPanelInventory extends Inventory {
 
             this.setItem(gui, rentedPanel.addPlayerToHouse, (event) -> {
                 this.addPlayerAction.clickAction(player, house, gui).accept(playerUuid);
-            });
+            }, formatter);
 
             this.setItem(gui, rentedPanel.removePlayerFromHouse, (event) -> {
                 this.removePlayerAction.clickAction(player, house, gui).accept(playerUuid);
@@ -124,6 +135,31 @@ public class RentedPanelInventory extends Inventory {
 
                 this.changeOwnerAction.clickAction(player, house, gui).accept(playerUuid);
             });
+
+            this.setItem(gui, rentedPanel.endRenovation, (event) -> {
+                if (!owner.getUuid().equals(playerUuid)) {
+                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.youNeedToBeOwnerOrCoOwner);
+                    return;
+                }
+
+                if (!this.houseMemberService.isCoOwner(house, playerUuid)) {
+                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.youNeedToBeOwnerOrCoOwner);
+                    return;
+                }
+
+                this.menageRenovationInventory.openInventory(player, house);
+            });
+
+            if (house.getBuyPrice() != 0) {
+                this.setItem(gui, rentedPanel.buyHouse, (event) -> {
+                    if (!owner.getUuid().equals(playerUuid)) {
+                        this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.youNeedToBeOwner);
+                        return;
+                    }
+
+                    this.buyHouseAction.clickAction(player, house, gui).accept(playerUuid);
+                });
+            }
 
             this.setItem(gui, rentedPanel.closeInventoryItem, (event) -> {
                 player.closeInventory();

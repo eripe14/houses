@@ -11,6 +11,8 @@ public interface RegionService {
 
     void resetRegion(HouseRegion houseRegion);
 
+    void killAllFurniture(HouseRegion houseRegion);
+
     CompletableFuture<FinalRegionResult> getRegions(Player player, String houseId, HouseDistrict houseDistrict, HouseType houseType);
 
     RegionResult getRegion(Player player, String regionName);

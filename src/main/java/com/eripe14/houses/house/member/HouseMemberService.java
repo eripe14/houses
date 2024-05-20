@@ -6,8 +6,11 @@ import com.eripe14.houses.house.HouseService;
 import com.eripe14.houses.house.owner.Owner;
 import panda.std.Option;
 
+import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 public class HouseMemberService {
@@ -66,6 +69,7 @@ public class HouseMemberService {
 
     public void addCoOwner(House house, HouseMember member) {
         member.setCoOwner(true);
+        member.setCoOwnerAt(Instant.now());
         member.getPermissions().forEach((permission, value) -> member.getPermissions().put(permission, true));
 
         house.getMembers().put(member.getMemberUuid(), member);
@@ -76,6 +80,7 @@ public class HouseMemberService {
         Map<HouseMemberPermission, Boolean> defaultHouseMemberPermission = this.pluginConfiguration.defaultHouseMemberPermission;
 
         member.setCoOwner(false);
+        member.setCoOwnerAt(null);
         member.getPermissions().clear();
         member.getPermissions().putAll(defaultHouseMemberPermission);
 
@@ -84,7 +89,7 @@ public class HouseMemberService {
     }
 
     public boolean hasPermission(HouseMember member, HouseMemberPermission permission) {
-        return member.getPermissions().getOrDefault(permission, false);
+        return member.getPermissions().get(permission);
     }
 
     public boolean isHouseMember(House house, UUID uuid) {
@@ -94,5 +99,14 @@ public class HouseMemberService {
     public Option<HouseMember> getHouseMember(House house, UUID uuid) {
         return Option.of(house.getMembers().get(uuid));
     }
+
+    public Optional<HouseMember> getHouseMember(House house, String name) {
+        return house.getMembers().values().stream().filter(member -> member.getMemberName().equalsIgnoreCase(name)).findFirst();
+    }
+
+    public List<HouseMember> getCoOwners(House house) {
+        return house.getMembers().values().stream().filter(HouseMember::isCoOwner).toList();
+    }
+
 
 }

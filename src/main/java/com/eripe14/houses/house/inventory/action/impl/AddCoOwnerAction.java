@@ -1,6 +1,7 @@
 package com.eripe14.houses.house.inventory.action.impl;
 
 import com.eripe14.houses.alert.Alert;
+import com.eripe14.houses.alert.AlertFormatter;
 import com.eripe14.houses.alert.AlertHandler;
 import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
@@ -13,7 +14,6 @@ import com.eripe14.houses.notification.NotificationAnnouncer;
 import dev.triumphteam.gui.guis.Gui;
 import org.bukkit.entity.Player;
 import panda.std.Option;
-import panda.utilities.text.Formatter;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -50,7 +50,7 @@ public class AddCoOwnerAction implements InventoryClickAction {
 
             HouseMember houseMember = houseMemberOption.get();
 
-            Formatter formatter = new Formatter();
+            AlertFormatter formatter = new AlertFormatter();
             formatter.register("{OWNER}", house.getOwner().get().getName());
             formatter.register("{PLAYER}", houseMember.getMemberName());
 

@@ -4,6 +4,7 @@ public enum HouseMemberPermission {
 
     OPEN_DOORS,
     OPEN_CHESTS,
-    PLACE_FURNITURE
+    PLACE_FURNITURE,
+    RENOVATE
 
 }

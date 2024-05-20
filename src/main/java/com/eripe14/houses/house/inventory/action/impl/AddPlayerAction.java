@@ -1,5 +1,6 @@
 package com.eripe14.houses.house.inventory.action.impl;
 
+import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import com.eripe14.houses.house.House;
@@ -23,6 +24,7 @@ public class AddPlayerAction implements InventoryClickAction {
     private final NotificationAnnouncer notificationAnnouncer;
     private final MessageConfiguration messageConfiguration;
     private final PluginConfiguration pluginConfiguration;
+    private final InventoryConfiguration inventoryConfiguration;
 
     public AddPlayerAction(
             HouseMemberService houseMemberService,
@@ -30,7 +32,8 @@ public class AddPlayerAction implements InventoryClickAction {
             ConfirmInventory confirmInventory,
             NotificationAnnouncer notificationAnnouncer,
             MessageConfiguration messageConfiguration,
-            PluginConfiguration pluginConfiguration
+            PluginConfiguration pluginConfiguration,
+            InventoryConfiguration inventoryConfiguration
     ) {
         this.houseMemberService = houseMemberService;
         this.houseInviteService = houseInviteService;
@@ -38,6 +41,7 @@ public class AddPlayerAction implements InventoryClickAction {
         this.notificationAnnouncer = notificationAnnouncer;
         this.messageConfiguration = messageConfiguration;
         this.pluginConfiguration = pluginConfiguration;
+        this.inventoryConfiguration = inventoryConfiguration;
     }
 
     @Override
@@ -50,7 +54,8 @@ public class AddPlayerAction implements InventoryClickAction {
                     this.confirmInventory,
                     this.notificationAnnouncer,
                     this.pluginConfiguration,
-                    this.messageConfiguration.house
+                    this.messageConfiguration.house,
+                    this.inventoryConfiguration
             );
 
             this.houseInviteService.addInvite(inviteSenderUuid, houseMemberInvite);

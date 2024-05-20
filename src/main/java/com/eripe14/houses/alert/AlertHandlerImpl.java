@@ -5,7 +5,6 @@ import com.eripe14.houses.notification.NotificationAnnouncer;
 import com.eripe14.houses.scheduler.Scheduler;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import panda.utilities.text.Formatter;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -28,21 +27,20 @@ public class AlertHandlerImpl implements AlertHandler {
 
     @Override
     public void sendAlert(Player player, Alert alert) {
-        Formatter alertFormatter = new Formatter();
-        alertFormatter.register("{SUBJECT}", alert.subject());
-        alertFormatter.register("{MESSAGE}", alert.message());
+        AlertFormatter alertFormatter = new AlertFormatter();
+        alertFormatter.register("{SUBJECT}", alert.getSubject());
+        alertFormatter.register("{MESSAGE}", alert.getMessage());
 
         for (String alertMessage : this.messageConfiguration.alert.alertMessage) {
-            this.notificationAnnouncer.sendMessage(player, alertMessage, alertFormatter, alert.formatter());
+            this.notificationAnnouncer.sendMessage(player, alertMessage, alertFormatter, alert.getFormatter());
         }
 
         this.alertService.removeAlert(alert);
     }
 
-
     @Override
     public void sendAlertAfterTime(Player player, Alert alert, Duration duration) {
-        this.scheduler.laterAsync(() -> this.sendAlert(player, alert), duration);
+        this.scheduler.laterSync(() -> this.sendAlert(player, alert), duration);
     }
 
     @Override

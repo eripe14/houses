@@ -1,6 +1,7 @@
 package com.eripe14.houses.house.inventory.impl;
 
 import com.eripe14.houses.alert.Alert;
+import com.eripe14.houses.alert.AlertFormatter;
 import com.eripe14.houses.alert.AlertHandler;
 import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
@@ -14,7 +15,6 @@ import com.eripe14.houses.scheduler.Scheduler;
 import com.eripe14.houses.util.adventure.Legacy;
 import dev.triumphteam.gui.guis.Gui;
 import org.bukkit.entity.Player;
-import panda.utilities.text.Formatter;
 
 import java.util.UUID;
 
@@ -55,20 +55,25 @@ public class ChangePermissionsInventory extends Inventory {
                 gui.getFiller().fill(changePermission.filler.asGuiItem());
             }
 
-            Formatter formatter = new Formatter();
+            AlertFormatter formatter = new AlertFormatter();
             formatter.register("{OWNER}", house.getOwner().get().getName());
             formatter.register("{PLAYER}", houseMember.getMemberName());
+            formatter.register("{HOUSE}", house.getHouseId());
             formatter.register(
                     "{STATUS_OPEN_DOOR}",
-                    this.houseMemberService.hasPermission(houseMember, HouseMemberPermission.OPEN_DOORS)
+                    String.valueOf(this.houseMemberService.hasPermission(houseMember, HouseMemberPermission.OPEN_DOORS))
             );
             formatter.register(
                     "{STATUS_OPEN_CHEST}",
-                    this.houseMemberService.hasPermission(houseMember, HouseMemberPermission.OPEN_CHESTS)
+                    String.valueOf(this.houseMemberService.hasPermission(houseMember, HouseMemberPermission.OPEN_CHESTS))
             );
             formatter.register(
                     "{STATUS_PLACE_FURNITURE}",
-                    this.houseMemberService.hasPermission(houseMember, HouseMemberPermission.PLACE_FURNITURE)
+                    String.valueOf(this.houseMemberService.hasPermission(houseMember, HouseMemberPermission.PLACE_FURNITURE))
+            );
+            formatter.register(
+                    "{RENOVATE}",
+                    String.valueOf(this.houseMemberService.hasPermission(houseMember, HouseMemberPermission.RENOVATE))
             );
 
             this.setItem(gui, changePermission.changeOpenDoorPermissionItem, event -> {
@@ -98,13 +103,22 @@ public class ChangePermissionsInventory extends Inventory {
                 this.openInventory(player, house, houseMember);
             }, formatter);
 
+            this.setItem(gui, changePermission.changeRenovatePermissionItem, event -> {
+                this.houseMemberService.changePermissionStatus(house, houseMember, HouseMemberPermission.RENOVATE);
+
+                this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.changedPermission, formatter);
+                this.sendPermissionAlert(houseMember, formatter);
+
+                this.openInventory(player, house, houseMember);
+            }, formatter);
+
             this.setItem(gui, changePermission.closeInventoryItem, event -> gui.close(player));
 
             this.scheduler.sync(() -> gui.open(player));
         });
     }
 
-    private void sendPermissionAlert(HouseMember houseMember, Formatter formatter) {
+    private void sendPermissionAlert(HouseMember houseMember, AlertFormatter formatter) {
         UUID targetUuid = houseMember.getMemberUuid();
         Alert alert = new Alert(
                 targetUuid,

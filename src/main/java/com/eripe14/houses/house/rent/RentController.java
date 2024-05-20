@@ -1,14 +1,15 @@
 package com.eripe14.houses.house.rent;
 
+import com.eripe14.houses.alert.Alert;
+import com.eripe14.houses.alert.AlertFormatter;
+import com.eripe14.houses.alert.AlertHandler;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
-import com.eripe14.houses.notification.NotificationAnnouncer;
 import com.eripe14.houses.util.DurationUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import panda.utilities.text.Formatter;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -18,14 +19,19 @@ public class RentController implements Listener {
 
     private final RentService rentService;
     private final PluginConfiguration pluginConfiguration;
+    private final AlertHandler alertHandler;
     private final MessageConfiguration messageConfiguration;
-    private final NotificationAnnouncer notificationAnnouncer;
 
-    public RentController(RentService rentService, PluginConfiguration pluginConfiguration, MessageConfiguration messageConfiguration, NotificationAnnouncer notificationAnnouncer) {
+    public RentController(
+            RentService rentService,
+            PluginConfiguration pluginConfiguration,
+            AlertHandler alertHandler,
+            MessageConfiguration messageConfiguration
+    ) {
         this.rentService = rentService;
         this.pluginConfiguration = pluginConfiguration;
+        this.alertHandler = alertHandler;
         this.messageConfiguration = messageConfiguration;
-        this.notificationAnnouncer = notificationAnnouncer;
     }
 
     @EventHandler
@@ -46,10 +52,17 @@ public class RentController implements Listener {
             return;
         }
 
-        Formatter formatter = new Formatter();
-        formatter.register("{DAYS}", DurationUtil.format(this.pluginConfiguration.timeBeforeRentEndToReminder));
+        AlertFormatter formatter = new AlertFormatter();
+        formatter.register("{TIME}", DurationUtil.format(this.pluginConfiguration.timeBeforeRentEndToReminder));
 
-        this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.rent.rentEndSoon);
+        Alert alert = new Alert(
+                uuid,
+                this.messageConfiguration.rent.rentEndSoonSubject,
+                this.messageConfiguration.rent.rentEndSoonMessage,
+                formatter
+        );
+
+        this.alertHandler.sendAlertAfterTime(player, alert, this.pluginConfiguration.alertDelay);
     }
 
 }

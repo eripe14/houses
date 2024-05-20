@@ -1,9 +1,9 @@
 package com.eripe14.houses.house.invite.impl;
 
+import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import com.eripe14.houses.house.House;
-import com.eripe14.houses.house.HouseService;
 import com.eripe14.houses.house.inventory.impl.ConfirmInventory;
 import com.eripe14.houses.house.invite.HouseInviteService;
 import com.eripe14.houses.house.invite.Invite;
@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 public class ChangeOwnerInviteImpl implements Invite {
 
     private final House house;
-    private final HouseService houseService;
     private final HouseMemberService houseMemberService;
     private final HouseInviteService houseInviteService;
     private final RentService rentService;
@@ -31,20 +30,20 @@ public class ChangeOwnerInviteImpl implements Invite {
     private final NotificationAnnouncer notificationAnnouncer;
     private final PluginConfiguration pluginConfiguration;
     private final MessageConfiguration.House houseMessages;
+    private final InventoryConfiguration inventoryConfiguration;
 
     public ChangeOwnerInviteImpl(
             House house,
-            HouseService houseService,
             HouseMemberService houseMemberService,
             HouseInviteService houseInviteService,
             RentService rentService,
             ConfirmInventory confirmInventory,
             NotificationAnnouncer notificationAnnouncer,
             PluginConfiguration pluginConfiguration,
-            MessageConfiguration.House houseMessages
+            MessageConfiguration.House houseMessages,
+            InventoryConfiguration inventoryConfiguration
     ) {
         this.house = house;
-        this.houseService = houseService;
         this.houseMemberService = houseMemberService;
         this.houseInviteService = houseInviteService;
         this.rentService = rentService;
@@ -52,6 +51,7 @@ public class ChangeOwnerInviteImpl implements Invite {
         this.notificationAnnouncer = notificationAnnouncer;
         this.pluginConfiguration = pluginConfiguration;
         this.houseMessages = houseMessages;
+        this.inventoryConfiguration = inventoryConfiguration;
     }
 
     @Override
@@ -66,14 +66,18 @@ public class ChangeOwnerInviteImpl implements Invite {
             formatter.register("{PLAYER}", target.getName());
             formatter.register("{INVITER}", sender.getName());
 
+            Option<HouseMember> memberOption = this.houseMemberService.getHouseMember(this.house, target.getUniqueId());
+
+            if (memberOption.isEmpty()) {
+                this.notificationAnnouncer.sendMessage(sender, this.houseMessages.playerMustMemberToBecomeOwner);
+                return;
+            }
+
+            this.notificationAnnouncer.sendMessage(sender, this.houseMessages.inviteSent);
+
             Consumer<UUID> confirmAction = (confirmPlayer) -> {
                 Option<HouseMember> targetHouseMemberOption = this.houseMemberService.getHouseMember(this.house, confirmPlayer);
                 Option<Rent> rentOption = this.house.getRent();
-
-                if (targetHouseMemberOption.isEmpty()) {
-                    this.notificationAnnouncer.sendMessage(sender, this.houseMessages.playerMustMemberToBecomeOwner);
-                    return;
-                }
 
                 HouseMember targetHouseMember = targetHouseMemberOption.get();
                 HouseMember senderHouseMember = new HouseMember(
@@ -92,6 +96,7 @@ public class ChangeOwnerInviteImpl implements Invite {
                     this.rentService.addRent(rent);
                 }
 
+                this.houseInviteService.removeInvite(sender.getUniqueId());
                 this.houseMemberService.changeOwner(this.house, targetHouseMember);
                 this.houseMemberService.addDefaultMember(this.house, senderHouseMember);
                 target.closeInventory();
@@ -108,7 +113,13 @@ public class ChangeOwnerInviteImpl implements Invite {
                 this.notificationAnnouncer.sendMessage(target, this.houseMessages.cancelledOwnerInvitation, formatter);
             };
 
-            this.confirmInventory.openInventory(target, Option.of(target.getUniqueId()), confirmAction, cancelAction);
+            this.confirmInventory.openInventory(
+                    target,
+                    this.inventoryConfiguration.confirm.confirmBecomeOwnerTitle,
+                    Option.of(target.getUniqueId()),
+                    confirmAction,
+                    cancelAction
+            );
         };
     }
 

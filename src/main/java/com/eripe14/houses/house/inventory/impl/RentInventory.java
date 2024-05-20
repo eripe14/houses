@@ -7,11 +7,13 @@ import com.eripe14.houses.house.House;
 import com.eripe14.houses.house.HouseService;
 import com.eripe14.houses.house.inventory.Inventory;
 import com.eripe14.houses.house.purchase.HousePurchaseService;
+import com.eripe14.houses.house.region.RegionService;
 import com.eripe14.houses.house.rent.Rent;
 import com.eripe14.houses.house.rent.RentService;
 import com.eripe14.houses.notification.NotificationAnnouncer;
 import com.eripe14.houses.purchase.PurchaseService;
 import com.eripe14.houses.scheduler.Scheduler;
+import com.eripe14.houses.schematic.SchematicService;
 import com.eripe14.houses.util.adventure.Legacy;
 import dev.triumphteam.gui.components.GuiAction;
 import dev.triumphteam.gui.guis.Gui;
@@ -31,7 +33,9 @@ public class RentInventory extends Inventory {
     private final HousePurchaseService housePurchaseService;
     private final HouseService houseService;
     private final RentService rentService;
+    private final RegionService regionService;
     private final ConfirmInventory confirmInventory;
+    private final SchematicService schematicService;
     private final MessageConfiguration messageConfiguration;
     private final InventoryConfiguration inventoryConfiguration;
     private final PluginConfiguration pluginConfiguration;
@@ -43,7 +47,9 @@ public class RentInventory extends Inventory {
             HousePurchaseService housePurchaseService,
             HouseService houseService,
             RentService rentService,
+            RegionService regionService,
             ConfirmInventory confirmInventory,
+            SchematicService schematicService,
             MessageConfiguration messageConfiguration,
             InventoryConfiguration inventoryConfiguration,
             PluginConfiguration pluginConfiguration,
@@ -54,7 +60,9 @@ public class RentInventory extends Inventory {
         this.housePurchaseService = housePurchaseService;
         this.houseService = houseService;
         this.rentService = rentService;
+        this.regionService = regionService;
         this.confirmInventory = confirmInventory;
+        this.schematicService = schematicService;
         this.messageConfiguration = messageConfiguration;
         this.inventoryConfiguration = inventoryConfiguration;
         this.pluginConfiguration = pluginConfiguration;
@@ -70,7 +78,7 @@ public class RentInventory extends Inventory {
             AtomicInteger days = new AtomicInteger(minRentDays);
 
             Formatter formatter = new Formatter();
-            formatter.register("{HOUSE_ID}", house.getHouseId());
+            formatter.register("{HOUSE_ID}", house.getHouseId().replace("_", " "));
             formatter.register("{DAYS}", days.get());
             formatter.register("{PRICE}", house.getDailyRentalPrice() * days.get());
             formatter.register("{MIN_RENT_TIME}", minRentDays);
@@ -108,19 +116,42 @@ public class RentInventory extends Inventory {
                     this.housePurchaseService.addPanelItem(player);
                     this.housePurchaseService.killPurchaseFurniture(house);
                     this.purchaseService.withdrawMoney(player, house.getDailyRentalPrice() * days.get());
+                    this.regionService.resetRegion(house.getRegion());
+                    this.schematicService.saveSchematic(house.getRegion(), "_rent");
 
                     this.notificationAnnouncer.sendMessage(player, houseMessage.rentedHouse, formatter);
                     gui.close(player);
                 };
 
-                this.confirmInventory.openInventory(player, Option.none(), confirm, gui::close);
+                Consumer<Player> cancel = (cancelPlayer) -> {
+                    gui.close(player);
+                };
+
+                this.confirmInventory.openInventory(
+                        player,
+                        rentInventory.confirmTitle,
+                        Option.none(),
+                        this.inventoryConfiguration.confirm.rentHouseAdditionalItem,
+                        confirm,
+                        cancel,
+                        formatter
+                );
             };
 
             this.setItem(gui, rentInventory.rentItem, rentAction, formatter);
 
             this.setItem(gui, rentInventory.addDayItem, (event) -> {
+                if (event.isShiftClick()) {
+                    this.updateFormatter(formatter, days.addAndGet(10), house);
+                    this.setItem(gui, rentInventory.rentItem, rentAction, formatter);
+
+                    gui.update();
+                    return;
+                }
+
                 this.updateFormatter(formatter, days.incrementAndGet(), house);
                 this.setItem(gui, rentInventory.rentItem, rentAction, formatter);
+
                 gui.update();
             });
 
@@ -130,8 +161,26 @@ public class RentInventory extends Inventory {
                     return;
                 }
 
+                if (event.isShiftClick()) {
+                    if (days.get() - 10 <= minRentDays) {
+                        this.updateFormatter(formatter, minRentDays, house);
+                        this.setItem(gui, rentInventory.rentItem, rentAction, formatter);
+                        this.notificationAnnouncer.sendMessage(player, houseMessage.requiredRentalTime, formatter);
+
+                        gui.update();
+                        return;
+                    }
+
+                    this.updateFormatter(formatter, days.addAndGet(-10), house);
+                    this.setItem(gui, rentInventory.rentItem, rentAction, formatter);
+
+                    gui.update();
+                    return;
+                }
+
                 this.updateFormatter(formatter, days.decrementAndGet(), house);
                 this.setItem(gui, rentInventory.rentItem, rentAction, formatter);
+
                 gui.update();
             });
 

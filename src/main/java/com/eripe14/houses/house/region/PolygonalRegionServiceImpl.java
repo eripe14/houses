@@ -1,8 +1,11 @@
 package com.eripe14.houses.house.region;
 
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
+import com.eripe14.houses.house.region.protection.ProtectionService;
+import com.eripe14.houses.house.region.selection.HouseSelectionService;
+import com.eripe14.houses.position.Position;
+import com.eripe14.houses.position.PositionAdapter;
 import com.eripe14.houses.scheduler.Scheduler;
-import com.eripe14.houses.schematic.SchematicService;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -12,17 +15,22 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import dev.lone.itemsadder.api.CustomFurniture;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import panda.std.Option;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -32,7 +40,8 @@ public class PolygonalRegionServiceImpl implements RegionService {
     private final Scheduler scheduler;
     private final WorldEdit worldEdit;
     private final WorldGuard worldGuard;
-    private final SchematicService schematicService;
+    private final HouseSelectionService houseSelectionService;
+    private final ProtectionService protectionService;
     private final PluginConfiguration pluginConfiguration;
 
     public PolygonalRegionServiceImpl(
@@ -40,14 +49,16 @@ public class PolygonalRegionServiceImpl implements RegionService {
             Scheduler scheduler,
             WorldEdit worldEdit,
             WorldGuard worldGuard,
-            SchematicService schematicService,
+            HouseSelectionService houseSelectionService,
+            ProtectionService protectionService,
             PluginConfiguration pluginConfiguration
     ) {
         this.server = server;
         this.scheduler = scheduler;
         this.worldEdit = worldEdit;
         this.worldGuard = worldGuard;
-        this.schematicService = schematicService;
+        this.houseSelectionService = houseSelectionService;
+        this.protectionService = protectionService;
         this.pluginConfiguration = pluginConfiguration;
     }
 
@@ -65,12 +76,53 @@ public class PolygonalRegionServiceImpl implements RegionService {
         manager.addRegion(result.plot().get());
         manager.addRegion(houseRegion);
 
-        this.schematicService.pasteSchematic(world, houseRegion.getMinimumPoint(), schematicFileName);
     }
 
     @Override
     public void resetRegion(HouseRegion houseRegion) {
+        for (ArmorStand armorStand : houseRegion.getWorld().getEntitiesByClass(ArmorStand.class)) {
+            for (
+                    Iterator<Position> iterator = houseRegion.getPlacedFurnitureLocations().iterator();
+                    iterator.hasNext();
+                ) {
+                Location location = armorStand.getLocation().clone();
+                Location placedFurnitureLocation = PositionAdapter.convert(iterator.next());
 
+                if (!location.equals(placedFurnitureLocation)) {
+                    continue;
+                }
+
+                CustomFurniture customFurniture = CustomFurniture.byAlreadySpawned(armorStand);
+                customFurniture.remove(false);
+
+                iterator.remove();
+            }
+        }
+    }
+
+    @Override
+    public void killAllFurniture(HouseRegion houseRegion) {
+        int i = 0;
+        for (ArmorStand armorStand : houseRegion.getWorld().getEntitiesByClass(ArmorStand.class)) {
+            System.out.println(i);
+            i++;
+            System.out.println(armorStand.getLocation().toString());
+            ApplicableRegionSet locationRegions = this.protectionService.getLocationRegions(armorStand.getLocation());
+
+            System.out.println("size: " + locationRegions.getRegions().size());
+
+            if (locationRegions.getRegions().isEmpty()) {
+                continue;
+            }
+
+            for (ProtectedRegion region : locationRegions.getRegions()) {
+                if (houseRegion.getPlot().getId().equalsIgnoreCase(region.getId())
+                        || houseRegion.getHouse().getId().equalsIgnoreCase(region.getId())) {
+                    System.out.println("Killing furniture");
+                    armorStand.remove();
+                }
+            }
+        }
     }
 
     @Override
@@ -90,7 +142,10 @@ public class PolygonalRegionServiceImpl implements RegionService {
 
         this.scheduler.sync(() -> this.server.dispatchCommand(player, "/sel"));
 
-        this.scheduler.laterSync(() -> {
+        CompletableFuture<Player> playerSelectionFuture = new CompletableFuture<>();
+        this.houseSelectionService.putSelection(player, playerSelectionFuture);
+
+        playerSelectionFuture.whenComplete((playerFuture, throwable) -> {
             try {
                 RegionResult houseRegionResult = this.getRegion(player, houseRegionName);
 
@@ -106,7 +161,7 @@ public class PolygonalRegionServiceImpl implements RegionService {
                 houseRegion.setPriority(10);
                 houseRegion.setParent(plotRegion);
 
-                StateFlag[] flags = {Flags.CHEST_ACCESS, Flags.USE, Flags.BLOCK_PLACE, Flags.BLOCK_BREAK, Flags.PASSTHROUGH};
+                StateFlag[] flags = { Flags.CHEST_ACCESS, Flags.USE, Flags.BLOCK_PLACE, Flags.BLOCK_BREAK, Flags.PASSTHROUGH };
 
                 for (StateFlag flag : flags) {
                     plotRegion.setFlag(flag, StateFlag.State.ALLOW);
@@ -119,9 +174,8 @@ public class PolygonalRegionServiceImpl implements RegionService {
                 this.scheduler.sync(() -> this.server.dispatchCommand(player, "/sel"));
             } catch (ProtectedRegion.CircularInheritanceException e) {
                 finalRegionResultCompletableFuture.complete(failure);
-
             }
-        }, this.pluginConfiguration.timeToSetHomeRegion);
+        });
 
         return finalRegionResultCompletableFuture;
     }

@@ -10,3 +10,5 @@ depend:
  - Citizens
 prefix: Houses
 api-version: 1.13
+loadbefore:
+ - ccrpdev-api

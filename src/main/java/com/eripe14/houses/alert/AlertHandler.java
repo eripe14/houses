@@ -12,5 +12,4 @@ public interface AlertHandler {
     void sendAlertAfterTime(Player player, Alert alert, Duration duration);
 
     void sendAlertIfPlayerNotOnline(UUID uuid, Alert alert);
-
 }

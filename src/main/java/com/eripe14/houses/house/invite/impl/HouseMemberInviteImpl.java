@@ -1,5 +1,6 @@
 package com.eripe14.houses.house.invite.impl;
 
+import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import com.eripe14.houses.house.House;
@@ -26,6 +27,7 @@ public class HouseMemberInviteImpl implements Invite {
     private final NotificationAnnouncer notificationAnnouncer;
     private final PluginConfiguration pluginConfiguration;
     private final MessageConfiguration.House houseMessages;
+    private final InventoryConfiguration inventoryConfiguration;
 
     public HouseMemberInviteImpl(
             House house,
@@ -34,7 +36,8 @@ public class HouseMemberInviteImpl implements Invite {
             ConfirmInventory confirmInventory,
             NotificationAnnouncer notificationAnnouncer,
             PluginConfiguration pluginConfiguration,
-            MessageConfiguration.House houseMessages
+            MessageConfiguration.House houseMessages,
+            InventoryConfiguration inventoryConfiguration
     ) {
         this.house = house;
         this.houseMemberService = houseMemberService;
@@ -43,6 +46,7 @@ public class HouseMemberInviteImpl implements Invite {
         this.notificationAnnouncer = notificationAnnouncer;
         this.pluginConfiguration = pluginConfiguration;
         this.houseMessages = houseMessages;
+        this.inventoryConfiguration = inventoryConfiguration;
     }
 
     @Override
@@ -62,6 +66,7 @@ public class HouseMemberInviteImpl implements Invite {
                         this.house.getHouseId(), this.pluginConfiguration.defaultHouseMemberPermission, false);
 
                 this.houseMemberService.addHouseMember(this.house, houseMember);
+                this.houseInviteService.removeInvite(sender.getUniqueId());
                 target.closeInventory();
 
                 this.notificationAnnouncer.sendMessage(sender, this.houseMessages.playerAddedToHouse, formatter);
@@ -76,7 +81,13 @@ public class HouseMemberInviteImpl implements Invite {
                 this.notificationAnnouncer.sendMessage(target, this.houseMessages.cancelledInvitation, formatter);
             };
 
-            this.confirmInventory.openInventory(target, Option.of(target.getUniqueId()), confirmAction, cancelAction);
+            this.confirmInventory.openInventory(
+                    target,
+                    this.inventoryConfiguration.confirm.confirmJoinTitle,
+                    Option.of(target.getUniqueId()),
+                    confirmAction,
+                    cancelAction
+            );
         };
     }
 

@@ -1,9 +1,11 @@
 package com.eripe14.houses.house.inventory.impl;
 
 import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
+import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.house.House;
 import com.eripe14.houses.house.inventory.Inventory;
 import com.eripe14.houses.house.member.HouseMember;
+import com.eripe14.houses.notification.NotificationAnnouncer;
 import com.eripe14.houses.scheduler.Scheduler;
 import com.eripe14.houses.util.adventure.Legacy;
 import dev.triumphteam.gui.guis.Gui;
@@ -23,16 +25,22 @@ public class ListOfCoOwnersInventory extends Inventory {
     private final Server server;
     private final ConfirmInventory confirmInventory;
     private final InventoryConfiguration inventoryConfiguration;
+    private final NotificationAnnouncer notificationAnnouncer;
+    private final MessageConfiguration messageConfiguration;
 
     public ListOfCoOwnersInventory(
             Scheduler scheduler,
             Server server, ConfirmInventory confirmInventory,
-            InventoryConfiguration inventoryConfiguration
+            InventoryConfiguration inventoryConfiguration,
+            NotificationAnnouncer notificationAnnouncer,
+            MessageConfiguration messageConfiguration
     ) {
         this.scheduler = scheduler;
         this.server = server;
         this.confirmInventory = confirmInventory;
         this.inventoryConfiguration = inventoryConfiguration;
+        this.notificationAnnouncer = notificationAnnouncer;
+        this.messageConfiguration = messageConfiguration;
     }
 
     public void openInventory(Player player, House house, String title, Consumer<UUID> clickAction) {
@@ -46,18 +54,27 @@ public class ListOfCoOwnersInventory extends Inventory {
                     .create();
 
             Formatter formatter = new Formatter();
+            Consumer<Player> close = gui::close;
 
             house.getMembers().values().stream().filter(HouseMember::isCoOwner).forEach(houseMember -> {
                 formatter.register("{PLAYER}", houseMember.getMemberName());
 
                 OfflinePlayer offlinePlayer = this.server.getOfflinePlayer(houseMember.getMemberUuid());
 
-                this.setSkullItem(gui, listOfCoOwners.headItem, offlinePlayer, event -> {
-                    this.confirmInventory.openInventory(
+                this.addSkullItem(gui, listOfCoOwners.headItem, offlinePlayer, event -> {
+                    if (offlinePlayer.getUniqueId().equals(player.getUniqueId())) {
+                        this.notificationAnnouncer.sendActionBar(player, this.messageConfiguration.house.canNotModifyYourself);
+                        return;
+                    }
+
+                    this.confirmInventory.openSkullInventory(
                             player,
+                            listOfCoOwners.confirmTitle,
                             Option.of(offlinePlayer.getUniqueId()),
+                            offlinePlayer,
+                            this.inventoryConfiguration.confirm.skullAdditionalItem,
                             clickAction,
-                            gui::close
+                            close
                     );
                 }, formatter);
             });

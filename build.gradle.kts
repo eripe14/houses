@@ -13,16 +13,28 @@ repositories {
     gradlePluginPortal()
 
     maven { url = uri("https://repo.panda-lang.org/releases") }
+    maven { url = uri("https://repo.codemc.io/repository/maven-public/") }
     maven { url = uri("https://jitpack.io") }
     maven { url = uri("https://maven.citizensnpcs.co/repo") }
     maven { url = uri("https://maven.enginehub.org/repo/") }
     maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") }
     maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
+    maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/craftcityrp/ccrpdev-api")
+        credentials {
+            username = "eripe14"
+            password = System.getenv("GITHUB_TOKEN") ?: ""
+        }
+    }
 }
 
 dependencies {
     // Spigot
-    compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
+
+    compileOnly("pl.craftcityrp.developerapi:ccrpdev-api:1.8-SNAPSHOT")
 
     // Kyori Adventure
     implementation("net.kyori:adventure-platform-bukkit:4.3.2")
@@ -47,7 +59,9 @@ dependencies {
     compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.1")
 
     // Citizens2
-    compileOnly("net.citizensnpcs:citizensapi:2.0.33-SNAPSHOT")
+    compileOnly("net.citizensnpcs:citizens-main:2.0.33-SNAPSHOT") {
+        exclude("*", "*")
+    }
 
     // FAWE
     implementation(platform("com.intellectualsites.bom:bom-newest:1.42")) // Ref: https://github.com/IntellectualSites/bom
@@ -57,9 +71,11 @@ dependencies {
     // WorldGuard
     compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.8-SNAPSHOT")
 
-    // Pixel Width
-    implementation("solar.squares:pixel-width-core:1.1.0")
-    implementation("solar.squares:pixel-width-utils:1.1.0")
+    // NbtApi
+    implementation("de.tr7zw:item-nbt-api:2.12.4")
+
+    // Expiring Map
+    implementation("net.jodah:expiringmap:0.5.11")
 }
 
 bukkit {
@@ -70,6 +86,7 @@ bukkit {
     author = "eripe14"
     version = "${project.version}"
     depend = listOf("FastAsyncWorldEdit", "WorldGuard", "ItemsAdder", "Vault", "Citizens")
+    loadBefore = listOf("ccrpdev-api")
 }
 
 tasks {
@@ -105,7 +122,7 @@ tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
         "dev.rollczi",
         "dev.triumphteam",
         "com.github.ben-manes.caffeine",
-        "solar.squares"
+        "de.tr7zw.changeme.nbtapi"
     ).forEach { pack ->
         relocate(pack, "$prefix.$pack")
     }

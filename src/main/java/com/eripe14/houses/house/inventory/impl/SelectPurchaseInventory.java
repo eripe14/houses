@@ -65,6 +65,7 @@ public class SelectPurchaseInventory extends Inventory {
                 Consumer<UUID> confirm = (confirmPlayer) -> {
                     if (this.housePurchaseService.purchaseHouse(player, house)) {
                         this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.boughtHouse, formatter);
+                        this.scheduler.sync(() -> this.housePurchaseService.killPurchaseFurniture(house));
                         gui.close(player);
 
                         return;
@@ -74,7 +75,17 @@ public class SelectPurchaseInventory extends Inventory {
                     gui.close(player);
                 };
 
-                this.confirmInventory.openInventory(player, Option.none(), confirm, gui::close);
+                Consumer<Player> close = gui::close;
+
+                this.confirmInventory.openInventory(
+                        player,
+                        selectPurchaseOption.confirmTitle,
+                        Option.none(),
+                        this.inventoryConfiguration.confirm.buyHouseAdditionalItem,
+                        confirm,
+                        close,
+                        formatter
+                );
             }, formatter);
 
             this.setItem(gui, selectPurchaseOption.rentItem, event -> this.rentInventory.openInventory(player, house), formatter);

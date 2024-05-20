@@ -8,18 +8,13 @@ import com.eripe14.houses.house.inventory.impl.RentedPanelInventory;
 import com.eripe14.houses.house.member.HouseMemberService;
 import com.eripe14.houses.house.owner.Owner;
 import com.eripe14.houses.house.region.protection.ProtectionService;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import dev.lone.itemsadder.api.CustomFurniture;
 import dev.lone.itemsadder.api.Events.FurnitureBreakEvent;
 import dev.lone.itemsadder.api.Events.FurnitureInteractEvent;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import panda.std.Option;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class HousePanelController implements Listener {
@@ -49,13 +44,20 @@ public class HousePanelController implements Listener {
             return;
         }
 
-        Option<House> houseOption = this.getHouseFromFurnitureLocation(event.getNamespacedID(), event.getFurniture());
+        Option<House> houseOption = this.houseService.getHouseFromFurnitureLocation(
+                this.pluginConfiguration.itemsAdderHousePanelNamespacedId, event.getFurniture()
+        );
 
         if (houseOption.isEmpty()) {
             return;
         }
 
         House house = houseOption.get();
+
+        if (house.getOwner().isEmpty()) {
+            return;
+        }
+
         Owner owner = house.getOwner().get();
 
         if (this.houseMemberService.isCoOwner(house, uuid) || owner.getUuid().equals(uuid)) {
@@ -79,53 +81,34 @@ public class HousePanelController implements Listener {
             return;
         }
 
-        Option<House> houseOption = this.getHouseFromFurnitureLocation(event.getNamespacedID(), event.getFurniture());
+        Option<House> houseOption = this.houseService.getHouseFromFurnitureLocation(
+                this.pluginConfiguration.itemsAdderHousePanelNamespacedId, event.getFurniture()
+        );
 
         if (houseOption.isEmpty()) {
             return;
         }
 
         House house = houseOption.get();
-        Owner owner = house.getOwner().get();
+        Option<Owner> ownerOption = house.getOwner();
+
+        if (ownerOption.isEmpty()) {
+            if (player.hasPermission(this.pluginConfiguration.bypassPermission)) {
+                event.setCancelled(false);
+                return;
+            }
+
+            event.setCancelled(true);
+            return;
+        }
+
+        Owner owner = ownerOption.get();
 
         event.setCancelled(true);
 
         if (this.houseMemberService.isCoOwner(house, uuid) || owner.getUuid().equals(uuid)) {
             event.setCancelled(false);
         }
-    }
-
-    private Option<House> getHouseFromFurnitureLocation(String namespacedID, CustomFurniture furniture) {
-        Entity armorstand = furniture.getArmorstand();
-
-        if (namespacedID == null) {
-            return Option.none();
-        }
-
-        if (armorstand == null) {
-            return Option.none();
-        }
-
-        Location location = armorstand.getLocation();
-
-        if (!namespacedID.equalsIgnoreCase(this.pluginConfiguration.itemsAdderHousePanelNamespacedId)) {
-            return Option.none();
-        }
-
-        Optional<ProtectedRegion> regionOption = this.protectionService.findFirstRegion(location);
-
-        if (regionOption.isEmpty()) {
-            return Option.none();
-        }
-
-        ProtectedRegion region = regionOption.get();
-        Option<House> houseOption = this.houseService.getHouse(region);
-
-        if (houseOption.isEmpty()) {
-            return Option.none();
-        }
-
-        return houseOption;
     }
 
 }

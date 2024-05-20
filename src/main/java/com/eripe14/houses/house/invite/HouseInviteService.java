@@ -2,21 +2,24 @@ package com.eripe14.houses.house.invite;
 
 import com.eripe14.houses.EventCaller;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import net.jodah.expiringmap.ExpiringMap;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class HouseInviteService {
 
     private final EventCaller eventCaller;
-    private final Cache<UUID, Invite> invites;
+    private final Map<UUID, Invite> invites;
 
     public HouseInviteService(EventCaller eventCaller, PluginConfiguration pluginConfiguration) {
         this.eventCaller = eventCaller;
-        this.invites = CacheBuilder
-                .newBuilder()
-                .expireAfterWrite(pluginConfiguration.timeToConfirmHouseInvite)
+        this.invites = ExpiringMap.builder()
+                .expiration(pluginConfiguration.timeToConfirmHouseInvite.getSeconds(), TimeUnit.SECONDS)
+                .expirationListener((player, invite) -> {
+                    this.eventCaller.callEvent(new InviteExpireEvent((UUID) player, (Invite) invite));
+                })
                 .build();
     }
 
@@ -25,15 +28,15 @@ public class HouseInviteService {
     }
 
     public void removeInvite(UUID player) {
-        this.invites.invalidate(player);
+        this.invites.remove(player);
     }
 
     public Invite getInvite(UUID player) {
-        return this.invites.getIfPresent(player);
+        return this.invites.get(player);
     }
 
     public boolean hasSentInvite(UUID player) {
-        return this.invites.getIfPresent(player) != null;
+        return this.invites.get(player) != null;
     }
 
 }

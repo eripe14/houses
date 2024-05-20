@@ -14,6 +14,7 @@ import com.eripe14.houses.util.adventure.Legacy;
 import dev.triumphteam.gui.components.GuiAction;
 import dev.triumphteam.gui.guis.Gui;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import panda.std.Option;
 import panda.utilities.text.Formatter;
@@ -99,20 +100,48 @@ public class ExtendRentInventory extends Inventory {
                     gui.close(player);
                 };
 
-                this.confirmInventory.openInventory(player, Option.none(), confirm, gui::close);
+                Consumer<Player> cancel = (cancelPlayer) -> {
+                    gui.close(player);
+                };
+
+                this.confirmInventory.openInventory(
+                        player,
+                        extendRentInventory.confirmTitle,
+                        Option.none(),
+                        this.inventoryConfiguration.confirm.extendRentAdditionalItem,
+                        confirm,
+                        cancel,
+                        formatter
+                );
             };
 
             this.setItem(gui, extendRentInventory.extendRentItem, extendRentAction, formatter);
 
             this.setItem(gui, extendRentInventory.addDayItem, event -> {
+                if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
+                    this.updateFormatter(formatter, days.incrementAndGet() + 9, rent);
+                    this.setItem(gui, extendRentInventory.extendRentItem, extendRentAction, formatter);
+
+                    gui.update();
+                    return;
+                }
+
                 this.updateFormatter(formatter, days.incrementAndGet(), rent);
                 this.setItem(gui, extendRentInventory.extendRentItem, extendRentAction, formatter);
                 gui.update();
             });
 
             this.setItem(gui, extendRentInventory.removeDayItem, event -> {
-                if (days.get() <= 0) {
+                if (days.get() <= 0 || days.get() - 10 <= 0) {
                     this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.requiredExtendRentTime);
+                    return;
+                }
+
+                if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
+                    this.updateFormatter(formatter, days.decrementAndGet() - 9, rent);
+                    this.setItem(gui, extendRentInventory.extendRentItem, extendRentAction, formatter);
+
+                    gui.update();
                     return;
                 }
 
@@ -120,6 +149,8 @@ public class ExtendRentInventory extends Inventory {
                 this.setItem(gui, extendRentInventory.extendRentItem, extendRentAction, formatter);
                 gui.update();
             });
+
+            this.setItem(gui, extendRentInventory.closeInventoryItem, event -> gui.close(player));
 
             this.scheduler.sync(() -> gui.open(player));
         });

@@ -1,11 +1,14 @@
 package com.eripe14.houses.house.inventory.impl;
 
 import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
+import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.house.House;
 import com.eripe14.houses.house.inventory.Inventory;
+import com.eripe14.houses.notification.NotificationAnnouncer;
 import com.eripe14.houses.scheduler.Scheduler;
 import com.eripe14.houses.util.adventure.Legacy;
 import dev.triumphteam.gui.guis.Gui;
+import dev.triumphteam.gui.guis.GuiItem;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
@@ -22,12 +25,23 @@ public class ListOfHouseMembersInventory extends Inventory {
     private final Server server;
     private final ConfirmInventory confirmInventory;
     private final InventoryConfiguration inventoryConfiguration;
+    private final NotificationAnnouncer notificationAnnouncer;
+    private final MessageConfiguration messageConfiguration;
 
-    public ListOfHouseMembersInventory(Scheduler scheduler, Server server, ConfirmInventory confirmInventory, InventoryConfiguration inventoryConfiguration) {
+    public ListOfHouseMembersInventory(
+            Scheduler scheduler,
+            Server server,
+            ConfirmInventory confirmInventory,
+            InventoryConfiguration inventoryConfiguration,
+            NotificationAnnouncer notificationAnnouncer,
+            MessageConfiguration messageConfiguration
+    ) {
         this.scheduler = scheduler;
         this.server = server;
         this.confirmInventory = confirmInventory;
         this.inventoryConfiguration = inventoryConfiguration;
+        this.notificationAnnouncer = notificationAnnouncer;
+        this.messageConfiguration = messageConfiguration;
     }
 
     public void openInventory(Player player, House house, String title, Consumer<UUID> clickAction) {
@@ -41,17 +55,30 @@ public class ListOfHouseMembersInventory extends Inventory {
                     .create();
 
             Formatter formatter = new Formatter();
+            Consumer<Player> close = gui::close;
 
             house.getMembers().forEach((uuid, houseMember) -> {
                 formatter.register("{PLAYER}", houseMember.getMemberName());
 
                 OfflinePlayer offlinePlayer = this.server.getOfflinePlayer(uuid);
 
-                this.setSkullItem(gui, listOfHouseMembers.headItem, offlinePlayer, event -> {
-                    this.confirmInventory.openInventory(
+                this.addSkullItem(gui, listOfHouseMembers.headItem, offlinePlayer, event -> {
+                    if (offlinePlayer.getUniqueId().equals(player.getUniqueId())) {
+                        this.notificationAnnouncer.sendActionBar(player, this.messageConfiguration.house.canNotModifyYourself);
+                        return;
+                    }
+
+                    GuiItem skullItem = this.inventoryConfiguration.confirm.skullAdditionalItem
+                            .asGuiItemSkull(emptyEvent -> {}, offlinePlayer, formatter);
+
+                    this.confirmInventory.openSkullInventory(
                             player,
+                            listOfHouseMembers.confirmTitle,
                             Option.of(offlinePlayer.getUniqueId()),
-                            clickAction, gui::close
+                            offlinePlayer,
+                            this.inventoryConfiguration.confirm.skullAdditionalItem,
+                            clickAction,
+                            close
                     );
                 }, formatter);
             });

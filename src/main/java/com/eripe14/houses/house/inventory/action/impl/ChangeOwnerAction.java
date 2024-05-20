@@ -1,9 +1,9 @@
 package com.eripe14.houses.house.inventory.action.impl;
 
+import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import com.eripe14.houses.house.House;
-import com.eripe14.houses.house.HouseService;
 import com.eripe14.houses.house.inventory.action.InventoryClickAction;
 import com.eripe14.houses.house.inventory.impl.ConfirmInventory;
 import com.eripe14.houses.house.invite.HouseInviteService;
@@ -21,31 +21,31 @@ public class ChangeOwnerAction implements InventoryClickAction {
 
     private final HouseMemberService houseMemberService;
     private final HouseInviteService houseInviteService;
-    private final HouseService houseService;
     private final RentService rentService;
     private final ConfirmInventory confirmInventory;
     private final NotificationAnnouncer notificationAnnouncer;
     private final PluginConfiguration pluginConfiguration;
     private final MessageConfiguration messageConfiguration;
+    private final InventoryConfiguration inventoryConfiguration;
 
     public ChangeOwnerAction(
             HouseMemberService houseMemberService,
             HouseInviteService houseInviteService,
-            HouseService houseService,
             RentService rentService,
             ConfirmInventory confirmInventory,
             NotificationAnnouncer notificationAnnouncer,
             PluginConfiguration pluginConfiguration,
-            MessageConfiguration messageConfiguration
+            MessageConfiguration messageConfiguration,
+            InventoryConfiguration inventoryConfiguration
     ) {
         this.houseMemberService = houseMemberService;
         this.houseInviteService = houseInviteService;
-        this.houseService = houseService;
         this.rentService = rentService;
         this.confirmInventory = confirmInventory;
         this.notificationAnnouncer = notificationAnnouncer;
         this.pluginConfiguration = pluginConfiguration;
         this.messageConfiguration = messageConfiguration;
+        this.inventoryConfiguration = inventoryConfiguration;
     }
 
     @Override
@@ -53,14 +53,14 @@ public class ChangeOwnerAction implements InventoryClickAction {
         return (inviteSenderUuid) -> {
             ChangeOwnerInviteImpl changeOwnerInvite = new ChangeOwnerInviteImpl(
                     house,
-                    this.houseService,
                     this.houseMemberService,
                     this.houseInviteService,
                     this.rentService,
                     this.confirmInventory,
                     this.notificationAnnouncer,
                     this.pluginConfiguration,
-                    this.messageConfiguration.house
+                    this.messageConfiguration.house,
+                    this.inventoryConfiguration
             );
 
             this.houseInviteService.addInvite(inviteSenderUuid, changeOwnerInvite);
