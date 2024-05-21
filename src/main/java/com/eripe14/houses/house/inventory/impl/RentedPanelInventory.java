@@ -142,7 +142,7 @@ public class RentedPanelInventory extends Inventory {
                     return;
                 }
 
-                if (!this.houseMemberService.isCoOwner(house, playerUuid)) {
+                if (!this.houseMemberService.isCoOwner(house, playerUuid) && !owner.getUuid().equals(playerUuid)) {
                     this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.youNeedToBeOwnerOrCoOwner);
                     return;
                 }
