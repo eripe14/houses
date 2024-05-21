@@ -1,10 +1,11 @@
-# Houses #
-## Main info: ##
+# Houses role-play plugin #
+## 📘Main info: ##
 An advanced plugin that allows players to rent or buy houses, exclusive properties or apartments. It has an extensive house panel system. The plugin also has the function of renovating your own house, there are three types of renovations:
 1. complete
 2. major
 3. not interfering
-## Features: ##
+## 🧵Features: ##
+
 - Full customizable inventories, with the ability to add items, blocks, custom heads, and even items with custom NBT or custom model data.
 - Full customizable messages and plugin configuration
 - Managing house members permissions
@@ -15,7 +16,7 @@ An advanced plugin that allows players to rent or buy houses, exclusive properti
 - Block of flats system
 - And many more!
 
-## Commands: ##
+## 💻Commands: ##
 ### /house 
 ### permission: rp.house.command 
 - /house - send help message
