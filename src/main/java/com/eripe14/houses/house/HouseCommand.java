@@ -506,7 +506,7 @@ public class HouseCommand {
     }
 
     @Execute(name = "items")
-    void snowball(@Context Player player) {
+    void items(@Context Player player) {
         ItemStack snowball = this.robberyConfiguration.robberySnowball.asGuiItem().getItemStack();
         ItemStack lockpick = this.robberyConfiguration.lockpickItem.asGuiItem().getItemStack();
         ItemStack kickDoor = this.robberyConfiguration.kickDoorItem.asGuiItem().getItemStack();
