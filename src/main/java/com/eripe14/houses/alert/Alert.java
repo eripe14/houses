@@ -1,11 +1,10 @@
 package com.eripe14.houses.alert;
 
-import pl.craftcityrp.developerapi.data.DataBit;
+import com.eripe14.database.document.Document;
 
-import java.util.Map;
 import java.util.UUID;
 
-public class Alert extends DataBit {
+public class Alert implements Document {
 
     private final UUID uuid;
     private final UUID target;
@@ -14,7 +13,6 @@ public class Alert extends DataBit {
     private final AlertFormatter formatter;
 
     public Alert(UUID target, String subject, String message, AlertFormatter formatter) {
-        super(null);
         this.uuid = UUID.randomUUID();
         this.target = target;
         this.subject = subject;
@@ -23,7 +21,6 @@ public class Alert extends DataBit {
     }
 
     public Alert(UUID uuid, UUID target, String subject, String message, AlertFormatter formatter) {
-        super(null);
         this.uuid = uuid;
         this.target = target;
         this.subject = subject;
@@ -52,13 +49,7 @@ public class Alert extends DataBit {
     }
 
     @Override
-    public Object asJson() {
-        return Map.of(
-                "uuid", this.uuid,
-                "target", this.target,
-                "subject", this.subject,
-                "message", this.message,
-                "formatter", this.formatter.asJson()
-        );
+    public Class<? extends Document> getType() {
+        return this.getClass();
     }
 }

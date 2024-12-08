@@ -147,6 +147,9 @@ public class PluginConfiguration implements ReloadableConfig {
     @Description({ " ", "# Namespace ID custom furniture, który jest odpowiedzialny za otwieranie gui z remontami"})
     public String renovationNamespacedId = "stefor:gym_machine_6";
 
+    @Description({" ", "# Maksymalna ilość dni przedłużenia najmu"})
+    public int maxExtendRentDays = 30;
+
     @Override
     public Resource resource(File folder) {
         return Source.of(folder, "config.yml");

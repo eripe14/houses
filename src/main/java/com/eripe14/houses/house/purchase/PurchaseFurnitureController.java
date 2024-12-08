@@ -93,7 +93,7 @@ public class PurchaseFurnitureController implements Listener {
             return;
         }
 
-        if (house.getRegion().getType() == HouseType.APARTMENT) {
+        if (house.getRegion().getHouseType() == HouseType.APARTMENT) {
             return;
         }
 
@@ -143,8 +143,8 @@ public class PurchaseFurnitureController implements Listener {
         region.setHouseCustomFurniture(
                 new HouseCustomFurniture("-", new Position(0, 0, 0, 0, 0, "-"))
         );
-        this.houseService.addHouse(house);
 
+        this.houseService.addHouse(house);
         this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.removedHouseFurnitureForSale);
     }
 

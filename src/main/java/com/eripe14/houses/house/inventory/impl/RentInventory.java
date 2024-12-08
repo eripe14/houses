@@ -7,6 +7,7 @@ import com.eripe14.houses.house.House;
 import com.eripe14.houses.house.HouseService;
 import com.eripe14.houses.house.inventory.Inventory;
 import com.eripe14.houses.house.purchase.HousePurchaseService;
+import com.eripe14.houses.house.region.HouseType;
 import com.eripe14.houses.house.region.RegionService;
 import com.eripe14.houses.house.rent.Rent;
 import com.eripe14.houses.house.rent.RentService;
@@ -83,9 +84,10 @@ public class RentInventory extends Inventory {
             formatter.register("{PRICE}", house.getDailyRentalPrice() * days.get());
             formatter.register("{MIN_RENT_TIME}", minRentDays);
             formatter.register("{RENT_TIME}", days.get());
+            formatter.register("{BLOCK}", house.getBlockOfFlatsId());
 
             Gui gui = Gui.gui()
-                    .title(Legacy.title(rentInventory.title))
+                    .title(Legacy.title(formatter.format(rentInventory.title)))
                     .rows(rentInventory.rows)
                     .disableAllInteractions()
                     .create();
@@ -96,7 +98,7 @@ public class RentInventory extends Inventory {
 
             GuiAction<InventoryClickEvent> rentAction = (event) -> {
                 if (days.get() < minRentDays) {
-                    this.notificationAnnouncer.sendMessage(player, houseMessage.requiredRentalTime, formatter);
+                    this.notificationAnnouncer.sendActionBar(player, houseMessage.requiredRentalTime, formatter);
                     return;
                 }
 
@@ -108,6 +110,10 @@ public class RentInventory extends Inventory {
                 }
 
                 Consumer<UUID> confirm = (confirmPlayerUuid) -> {
+                    if (house.getOwner().isPresent()) {
+                        return;
+                    }
+
                     Rent rent = this.rentService.createRent(confirmPlayerUuid, house, days.get());
 
                     this.rentService.addRent(rent);
@@ -119,8 +125,13 @@ public class RentInventory extends Inventory {
                     this.regionService.resetRegion(house.getRegion());
                     this.schematicService.saveSchematic(house.getRegion(), "_rent");
 
-                    this.notificationAnnouncer.sendMessage(player, houseMessage.rentedHouse, formatter);
-                    gui.close(player);
+                    if (house.getRegion().getHouseType() == HouseType.APARTMENT) {
+                        this.notificationAnnouncer.sendMessage(player, houseMessage.rentedApartment, formatter);
+                    } else {
+                        this.notificationAnnouncer.sendMessage(player, houseMessage.rentedHouse, formatter);
+                    }
+
+                    this.scheduler.sync(() -> gui.close(player));
                 };
 
                 Consumer<Player> cancel = (cancelPlayer) -> {
@@ -157,7 +168,7 @@ public class RentInventory extends Inventory {
 
             this.setItem(gui, rentInventory.removeDayItem, (event) -> {
                 if (days.get() <= minRentDays) {
-                    this.notificationAnnouncer.sendMessage(player, houseMessage.requiredRentalTime, formatter);
+                    this.notificationAnnouncer.sendActionBar(player, houseMessage.requiredRentalTime, formatter);
                     return;
                 }
 
@@ -165,7 +176,7 @@ public class RentInventory extends Inventory {
                     if (days.get() - 10 <= minRentDays) {
                         this.updateFormatter(formatter, minRentDays, house);
                         this.setItem(gui, rentInventory.rentItem, rentAction, formatter);
-                        this.notificationAnnouncer.sendMessage(player, houseMessage.requiredRentalTime, formatter);
+                        this.notificationAnnouncer.sendActionBar(player, houseMessage.requiredRentalTime, formatter);
 
                         gui.update();
                         return;

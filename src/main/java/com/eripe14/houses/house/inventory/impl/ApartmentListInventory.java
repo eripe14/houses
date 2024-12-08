@@ -6,27 +6,33 @@ import com.eripe14.houses.house.HouseService;
 import com.eripe14.houses.house.inventory.Inventory;
 import com.eripe14.houses.scheduler.Scheduler;
 import com.eripe14.houses.util.adventure.Legacy;
+import com.eripe14.houses.util.math.Sorter;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import org.bukkit.entity.Player;
 import panda.utilities.text.Formatter;
+
+import java.util.List;
 
 public class ApartmentListInventory extends Inventory {
 
     private final Scheduler scheduler;
     private final HouseService houseService;
     private final SelectPurchaseInventory selectPurchaseInventory;
+    private final RentInventory rentInventory;
     private final InventoryConfiguration inventoryConfiguration;
 
     public ApartmentListInventory(
             Scheduler scheduler,
             HouseService houseService,
             SelectPurchaseInventory selectPurchaseInventory,
+            RentInventory rentInventory,
             InventoryConfiguration inventoryConfiguration
     ) {
         this.scheduler = scheduler;
         this.houseService = houseService;
         this.selectPurchaseInventory = selectPurchaseInventory;
+        this.rentInventory = rentInventory;
         this.inventoryConfiguration = inventoryConfiguration;
     }
 
@@ -43,10 +49,17 @@ public class ApartmentListInventory extends Inventory {
                     .disableAllInteractions()
                     .create();
 
-            for (House apartmentsInBlockOfFlat : this.houseService.getApartmentsInBlockOfFlats(house)) {
-                formatter.register("{HOUSE_ID}", apartmentsInBlockOfFlat.getHouseId());
+            List<House> houses = Sorter.sortAlphanumeric(this.houseService.getApartmentsInBlockOfFlats(house));
+
+            for (House apartmentsInBlockOfFlat : houses) {
+                formatter.register("{HOUSE_ID}", apartmentsInBlockOfFlat.getHouseId().replace("_", " "));
 
                 this.addItem(gui, apartmentBuyList.apartmentItem, event -> {
+                    if (house.getBuyPrice() == 0) {
+                        this.rentInventory.openInventory(player, apartmentsInBlockOfFlat);
+                        return;
+                    }
+
                     this.selectPurchaseInventory.openInventory(player, apartmentsInBlockOfFlat);
                 }, formatter);
             }

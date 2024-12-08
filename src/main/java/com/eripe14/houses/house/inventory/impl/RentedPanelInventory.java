@@ -15,6 +15,7 @@ import com.eripe14.houses.house.inventory.action.impl.RemoveCoOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.RemovePlayerAction;
 import com.eripe14.houses.house.member.HouseMemberService;
 import com.eripe14.houses.house.owner.Owner;
+import com.eripe14.houses.house.renovation.RenovationService;
 import com.eripe14.houses.notification.NotificationAnnouncer;
 import com.eripe14.houses.scheduler.Scheduler;
 import com.eripe14.houses.util.DurationUtil;
@@ -103,14 +104,29 @@ public class RentedPanelInventory extends Inventory {
             }, formatter);
 
             this.setItem(gui, rentedPanel.removePlayerFromHouse, (event) -> {
+                if (house.getMembers().isEmpty()) {
+                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.noMembers);
+                    return;
+                }
+
                 this.removePlayerAction.clickAction(player, house, gui).accept(playerUuid);
             });
 
             this.setItem(gui, rentedPanel.addCoOwner, (event) -> {
+                if (house.getMembers().isEmpty()) {
+                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.noMembers);
+                    return;
+                }
+
                 this.addCoOwnerAction.clickAction(player, house, gui).accept(playerUuid);
             });
 
             this.setItem(gui, rentedPanel.removeCoOwner, (event) -> {
+                if (house.getMembers().isEmpty()) {
+                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.noCoOwners);
+                    return;
+                }
+
                 this.removeCoOwnerAction.clickAction(player, house, gui).accept(playerUuid);
             });
 
@@ -119,12 +135,12 @@ public class RentedPanelInventory extends Inventory {
             });
 
             this.setItem(gui, rentedPanel.extendRent, (event) -> {
-                if (!owner.getUuid().equals(playerUuid)) {
-                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.youNeedToBeOwner);
+                if (this.houseMemberService.isCoOwner(house, playerUuid) || owner.getUuid().equals(playerUuid)) {
+                    this.extendRentAction.clickAction(player, house, gui).accept(playerUuid);
                     return;
                 }
 
-                this.extendRentAction.clickAction(player, house, gui).accept(playerUuid);
+                this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.youNeedToBeOwnerOrCoOwner);
             });
 
             this.setItem(gui, rentedPanel.changeOwner, (event) -> {
@@ -137,17 +153,12 @@ public class RentedPanelInventory extends Inventory {
             });
 
             this.setItem(gui, rentedPanel.endRenovation, (event) -> {
-                if (!owner.getUuid().equals(playerUuid)) {
-                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.youNeedToBeOwnerOrCoOwner);
+                if (owner.getUuid().equals(playerUuid) || this.houseMemberService.isCoOwner(house, playerUuid)) {
+                    this.menageRenovationInventory.openInventory(player, house);
                     return;
                 }
 
-                if (!this.houseMemberService.isCoOwner(house, playerUuid) && !owner.getUuid().equals(playerUuid)) {
-                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.youNeedToBeOwnerOrCoOwner);
-                    return;
-                }
-
-                this.menageRenovationInventory.openInventory(player, house);
+                this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.youNeedToBeOwnerOrCoOwner);
             });
 
             if (house.getBuyPrice() != 0) {

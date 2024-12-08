@@ -124,7 +124,6 @@ public class RenovationApplicationsInventory extends Inventory {
                         String name = house.getHouseId() + "_before_renovation_" + DurationUtil.formatSchematic(Instant.now());
 
                         this.schematicService.saveSchematicWithName(house.getRegion(), name);
-
                         this.houseService.setLatestSchematicName(
                                 house,
                                 name

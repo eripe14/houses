@@ -60,13 +60,23 @@ public class HouseMemberInviteImpl implements Invite {
             Formatter formatter = new Formatter();
             formatter.register("{PLAYER}", target.getName());
             formatter.register("{INVITER}", sender.getName());
+            formatter.register("{HOUSE_ID}", this.house.getHouseId().replace("_", " "));
 
             Consumer<UUID> confirmAction = (confirmPlayer) -> {
                 HouseMember houseMember = new HouseMember(target.getName(), target.getUniqueId(),
                         this.house.getHouseId(), this.pluginConfiguration.defaultHouseMemberPermission, false);
 
+                Invite invite = this.houseInviteService.getInvite(sender.getUniqueId());
+
+                if (invite == null) {
+                    target.closeInventory();
+                    this.notificationAnnouncer.sendMessage(target, this.houseMessages.inviteExpired, formatter);
+                    return;
+                }
+
                 this.houseMemberService.addHouseMember(this.house, houseMember);
                 this.houseInviteService.removeInvite(sender.getUniqueId());
+                this.houseInviteService.removeInvitedPlayer(target.getUniqueId());
                 target.closeInventory();
 
                 this.notificationAnnouncer.sendMessage(sender, this.houseMessages.playerAddedToHouse, formatter);
@@ -77,6 +87,7 @@ public class HouseMemberInviteImpl implements Invite {
                 target.closeInventory();
 
                 this.houseInviteService.removeInvite(sender.getUniqueId());
+                this.houseInviteService.removeInvitedPlayer(target.getUniqueId());
                 this.notificationAnnouncer.sendMessage(sender, this.houseMessages.playerCancelledInvitation, formatter);
                 this.notificationAnnouncer.sendMessage(target, this.houseMessages.cancelledInvitation, formatter);
             };
@@ -85,8 +96,10 @@ public class HouseMemberInviteImpl implements Invite {
                     target,
                     this.inventoryConfiguration.confirm.confirmJoinTitle,
                     Option.of(target.getUniqueId()),
+                    this.inventoryConfiguration.confirm.houseMemberJoin,
                     confirmAction,
-                    cancelAction
+                    cancelAction,
+                    formatter
             );
         };
     }

@@ -1,48 +1,25 @@
 package com.eripe14.houses.house.rent;
 
+import com.eripe14.database.Database;
+import com.eripe14.database.document.Document;
+import com.eripe14.database.document.DocumentCollection;
 import com.eripe14.houses.house.House;
 import panda.std.Option;
-import pl.craftcityrp.developerapi.data.DataBit;
-import pl.craftcityrp.developerapi.data.DataChunk;
-import pl.craftcityrp.developerapi.data.DataManager;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class RentService {
 
     private final Map<String, Rent> rents = new HashMap<>();
-    private final DataManager dataManager;
-    private final DataChunk dataChunk;
+    private final DocumentCollection documentCollection;
 
-    public RentService(DataManager dataManager) {
-        this.dataManager = dataManager;
-
-        if (!this.dataManager.getData().containsKey("rents")) {
-            this.dataManager.getData().put("rents", new DataBit(new DataChunk()));
-        }
-
-        this.dataChunk = this.dataManager.getData().get("rents").asChunk();
-
-        for (String key : this.dataChunk.getData().keySet()) {
-            DataChunk rentChunk = this.dataChunk.getBit(key).asChunk();
-            String houseId = rentChunk.getBit("houseId").asString();
-
-            Rent rent = new Rent(
-                    houseId,
-                    UUID.fromString(rentChunk.getBit("renter").asString()),
-                    rentChunk.getBit("pricePerDay").asInt(),
-                    Duration.parse(rentChunk.getBit("rentDuration").asString()),
-                    Instant.parse(rentChunk.getBit("endOfRent").asString())
-            );
-
-            this.rents.put(houseId, rent);
+    public RentService(Database database) {
+        this.documentCollection = database.getOrCreateCollection("houses_rents");
+        for (Document document : this.documentCollection.getAllDocuments()) {
+            Rent rent = (Rent) document;
+            this.rents.put(rent.getHouseId(), rent);
         }
     }
 
@@ -54,12 +31,12 @@ public class RentService {
 
     public void addRent(Rent rent) {
         this.rents.put(rent.getHouseId(), rent);
-        this.dataChunk.updateBit(rent.getHouseId(), rent);
+        this.documentCollection.addDocument(rent.getHouseId(), rent);
     }
 
     public void removeRent(String houseId) {
         this.rents.remove(houseId);
-        this.dataChunk.removeBit(houseId);
+        this.documentCollection.removeDocument(houseId);
     }
 
     public Optional<Rent> getPlayersRent(UUID renter) {

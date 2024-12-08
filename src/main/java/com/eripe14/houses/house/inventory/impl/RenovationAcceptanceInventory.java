@@ -85,7 +85,7 @@ public class RenovationAcceptanceInventory extends Inventory {
                 HouseRegion region = house.getRegion();
                 Owner owner = house.getOwner().get();
 
-                formatter.register("{HOUSE}", house.getHouseId());
+                formatter.register("{HOUSE}", house.getHouseId().replace("_", " "));
                 formatter.register("{OWNER}", house.getOwner().get().getName());
                 formatter.register("{RENOVATION_TYPE}", renovationAcceptanceRequest.getRenovationType().getName());
                 formatter.register("{START_DATE}", DurationUtil.format(renovationAcceptanceRequest.getStartMoment()));

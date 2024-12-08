@@ -45,6 +45,10 @@ public class ListOfHouseMembersInventory extends Inventory {
     }
 
     public void openInventory(Player player, House house, String title, Consumer<UUID> clickAction) {
+        this.openInventory(player, house, title, clickAction, false);
+    }
+
+    public void openInventory(Player player, House house, String title, Consumer<UUID> clickAction, boolean canHandleYourself) {
         this.scheduler.async(() -> {
             InventoryConfiguration.ListOfHouseMembers listOfHouseMembers = this.inventoryConfiguration.listOfHouseMembers;
 
@@ -63,13 +67,14 @@ public class ListOfHouseMembersInventory extends Inventory {
                 OfflinePlayer offlinePlayer = this.server.getOfflinePlayer(uuid);
 
                 this.addSkullItem(gui, listOfHouseMembers.headItem, offlinePlayer, event -> {
-                    if (offlinePlayer.getUniqueId().equals(player.getUniqueId())) {
+                    if (offlinePlayer.getUniqueId().equals(player.getUniqueId()) && !canHandleYourself) {
                         this.notificationAnnouncer.sendActionBar(player, this.messageConfiguration.house.canNotModifyYourself);
                         return;
                     }
 
-                    GuiItem skullItem = this.inventoryConfiguration.confirm.skullAdditionalItem
-                            .asGuiItemSkull(emptyEvent -> {}, offlinePlayer, formatter);
+                    if (offlinePlayer.getUniqueId().equals(house.getOwner().get().getUuid())) {
+                        return;
+                    }
 
                     this.confirmInventory.openSkullInventory(
                             player,

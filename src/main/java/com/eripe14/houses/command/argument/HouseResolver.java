@@ -24,7 +24,7 @@ public class HouseResolver extends ArgumentResolver<CommandSender, House> {
         Option<House> houseOption = this.houseService.getHouse(argument);
 
         if (houseOption.isEmpty()) {
-            return ParseResult.failure("House not found!");
+            return ParseResult.failure("House not found");
         }
 
         return ParseResult.success(houseOption.get());
@@ -32,6 +32,10 @@ public class HouseResolver extends ArgumentResolver<CommandSender, House> {
 
     @Override
     public SuggestionResult suggest(Invocation<CommandSender> invocation, Argument<House> argument, SuggestionContext context) {
+        if (this.houseService.getAllHouses().isEmpty()) {
+            return SuggestionResult.of("<houseId>");
+        }
+
         return this.houseService.getAllHouses().stream()
                 .map(House::getHouseId)
                 .collect(SuggestionResult.collector());

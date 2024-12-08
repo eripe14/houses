@@ -34,12 +34,12 @@ public class HousePurchaseService {
     }
 
     public synchronized boolean purchaseHouse(Player player, House house) {
-        Owner owner = new Owner(player.getUniqueId(), player.getName());
-        house.setOwner(owner);
-
         if (!this.purchaseService.hasEnoughMoney(player, house.getBuyPrice())) {
             return false;
         }
+
+        Owner owner = new Owner(player.getUniqueId(), player.getName());
+        house.setOwner(owner);
 
         this.houseService.addHouse(house);
         this.purchaseService.withdrawMoney(player, house.getBuyPrice());

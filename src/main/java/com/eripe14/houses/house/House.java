@@ -1,5 +1,6 @@
 package com.eripe14.houses.house;
 
+import com.eripe14.database.document.Document;
 import com.eripe14.houses.house.member.HouseMember;
 import com.eripe14.houses.house.owner.Owner;
 import com.eripe14.houses.house.region.HouseRegion;
@@ -8,13 +9,12 @@ import com.eripe14.houses.house.renovation.RenovationData;
 import com.eripe14.houses.house.renovation.request.RenovationRequest;
 import com.eripe14.houses.house.rent.Rent;
 import panda.std.Option;
-import pl.craftcityrp.developerapi.data.DataBit;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class House extends DataBit {
+public class House implements Document {
 
     private final String houseId;
     private final Map<UUID, HouseMember> members;
@@ -30,7 +30,6 @@ public class House extends DataBit {
     private boolean hasAlarm;
 
     public House(String houseId, Option<Owner> owner, HouseRegion region, String blockOfFlatsId, int dailyRentalPrice) {
-        super(null);
         this.houseId = houseId;
         this.owner = owner;
         this.members = new HashMap<>();
@@ -46,7 +45,6 @@ public class House extends DataBit {
     }
 
     public House(String houseId, Option<Owner> owner, HouseRegion region, String blockOfFlatsId, int buyPrice, int dailyRentalPrice) {
-        super(null);
         this.houseId = houseId;
         this.owner = owner;
         this.members = new HashMap<>();
@@ -75,7 +73,6 @@ public class House extends DataBit {
             Renovation currentRenovation,
             boolean hasAlarm
     ) {
-        super(null);
         this.houseId = houseId;
         this.members = members;
         this.region = region;
@@ -104,7 +101,6 @@ public class House extends DataBit {
             Option<Renovation> currentRenovation,
             boolean hasAlarm
     ) {
-        super(null);
         this.houseId = houseId;
         this.members = members;
         this.region = region;
@@ -188,42 +184,7 @@ public class House extends DataBit {
     }
 
     @Override
-    public Object asJson() {
-        Owner owner = null;
-        Rent rent = null;
-        RenovationRequest renovationRequest = null;
-        Renovation currentRenovation = null;
-
-        if (this.owner.isPresent()) {
-            owner = this.owner.get();
-        }
-
-        if (this.rent.isPresent()) {
-            rent = this.rent.get();
-        }
-
-        if (this.renovationRequest.isPresent()) {
-            renovationRequest = this.renovationRequest.get();
-        }
-
-        if (this.currentRenovation.isPresent()) {
-            currentRenovation = this.currentRenovation.get();
-        }
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("houseId", this.houseId);
-        result.put("members", this.members);
-        result.put("region", this.region.asJson());
-        result.put("buyPrice", this.buyPrice);
-        result.put("dailyRentalPrice", this.dailyRentalPrice);
-        result.put("renovationData", this.renovationData.asJson());
-        result.put("blockOfFlatsId", this.blockOfFlatsId);
-        result.put("owner", owner == null ? "-" : owner.asJson());
-        result.put("rent", rent == null ? "-" : rent.asJson());
-        result.put("renovationRequest", renovationRequest == null ? "-" : renovationRequest.asJson());
-        result.put("currentRenovation", currentRenovation == null ? "-" : currentRenovation.asJson());
-        result.put("hasAlarm", this.hasAlarm);
-
-        return result;
+    public Class<? extends Document> getType() {
+        return this.getClass();
     }
 }

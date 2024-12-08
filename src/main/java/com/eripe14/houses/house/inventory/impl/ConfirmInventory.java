@@ -37,7 +37,7 @@ public class ConfirmInventory extends Inventory {
             InventoryConfiguration.Confirm confirm = this.inventoryConfiguration.confirm;
 
             Gui gui = Gui.gui()
-                    .title(Legacy.title(title))
+                    .title(Legacy.title(formatter.format(title)))
                     .rows(confirm.rows)
                     .disableAllInteractions()
                     .create();
@@ -98,6 +98,50 @@ public class ConfirmInventory extends Inventory {
             });
 
             Formatter formatter = new Formatter();
+            formatter.register("{PLAYER}", offlinePlayer.getName());
+
+            this.setSkullItem(gui, additionalSkullItem, offlinePlayer, (event) -> { }, formatter);
+
+            this.setItem(gui, confirm.cancelItem, (event) -> {
+                cancelAction.accept(player);
+            });
+
+            this.scheduler.sync(() -> gui.open(player));
+        });
+    }
+
+    public void openSkullInventory(
+            Player player,
+            String title,
+            Option<UUID> targetOption,
+            OfflinePlayer offlinePlayer,
+            ItemConfiguration additionalSkullItem,
+            Consumer<UUID> confirmAction,
+            Consumer<Player> cancelAction,
+            Formatter formatter
+    ) {
+        this.scheduler.async(() -> {
+            InventoryConfiguration.Confirm confirm = this.inventoryConfiguration.confirm;
+
+            Gui gui = Gui.gui()
+                    .title(Legacy.title(formatter.format(title)))
+                    .rows(confirm.rows)
+                    .disableAllInteractions()
+                    .create();
+
+            if (confirm.fillEmptySlots) {
+                gui.getFiller().fill(confirm.filler.asGuiItem());
+            }
+
+            this.setItem(gui, confirm.confirmItem, (event) -> {
+                if (targetOption.isEmpty()) {
+                    confirmAction.accept(player.getUniqueId());
+                    return;
+                }
+
+                confirmAction.accept(targetOption.get());
+            });
+
             formatter.register("{PLAYER}", offlinePlayer.getName());
 
             this.setSkullItem(gui, additionalSkullItem, offlinePlayer, (event) -> { }, formatter);

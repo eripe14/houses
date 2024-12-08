@@ -102,8 +102,7 @@ public class SchematicService {
         }
     }
 
-    public void saveSchematicWithName(HouseRegion houseRegion, String suffix) {
-        String name = houseRegion.getHouseId() + suffix + "_" + DurationUtil.formatSchematic(Instant.now());
+    public void saveSchematicWithName(HouseRegion houseRegion, String name) {
         String path = this.plugin.getDataFolder().getAbsolutePath().replace(this.plugin.getName(), "")
                 + "FastAsyncWorldEdit/schematics/" + name + ".schem";
         File schematicFile = new File(path);

@@ -56,6 +56,10 @@ public class RenovationAcceptanceController implements Listener {
             return;
         }
 
+        if (!player.hasPermission(this.pluginConfiguration.renovationApplicationsPermission)) {
+            return;
+        }
+
         this.renovationAcceptanceInventory.openInventory(player);
     }
 

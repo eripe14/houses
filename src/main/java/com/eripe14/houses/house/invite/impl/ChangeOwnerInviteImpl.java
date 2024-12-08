@@ -65,6 +65,8 @@ public class ChangeOwnerInviteImpl implements Invite {
             Formatter formatter = new Formatter();
             formatter.register("{PLAYER}", target.getName());
             formatter.register("{INVITER}", sender.getName());
+            formatter.register("{HOUSE_ID}", this.house.getHouseId().replace("_", " "));
+            formatter.register("{PREVIOUS_OWNER}", this.house.getOwner().get().getName());
 
             Option<HouseMember> memberOption = this.houseMemberService.getHouseMember(this.house, target.getUniqueId());
 
@@ -97,6 +99,7 @@ public class ChangeOwnerInviteImpl implements Invite {
                 }
 
                 this.houseInviteService.removeInvite(sender.getUniqueId());
+                this.houseInviteService.removeInvitedPlayer(target.getUniqueId());
                 this.houseMemberService.changeOwner(this.house, targetHouseMember);
                 this.houseMemberService.addDefaultMember(this.house, senderHouseMember);
                 target.closeInventory();
@@ -109,6 +112,7 @@ public class ChangeOwnerInviteImpl implements Invite {
                 target.closeInventory();
 
                 this.houseInviteService.removeInvite(sender.getUniqueId());
+                this.houseInviteService.removeInvitedPlayer(target.getUniqueId());
                 this.notificationAnnouncer.sendMessage(sender, this.houseMessages.playerCancelledOwnerInvitation, formatter);
                 this.notificationAnnouncer.sendMessage(target, this.houseMessages.cancelledOwnerInvitation, formatter);
             };
@@ -117,8 +121,10 @@ public class ChangeOwnerInviteImpl implements Invite {
                     target,
                     this.inventoryConfiguration.confirm.confirmBecomeOwnerTitle,
                     Option.of(target.getUniqueId()),
+                    this.inventoryConfiguration.confirm.changingOwnerAdditionalItem,
                     confirmAction,
-                    cancelAction
+                    cancelAction,
+                    formatter
             );
         };
     }

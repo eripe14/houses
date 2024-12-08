@@ -45,11 +45,15 @@ public class MessageConfiguration implements ReloadableConfig {
     public static class House {
         public String cantCreateRegions = "&cNie udało się stworzyć regionów!";
 
-        public String preCreateRegions = "&aZaznaczono region działki domu! Kliknij F, jak skończysz zaznaczać drugi obszar!";
+        public String cantCreateApartment = "&cNie udało się stworzyć apartmentu!";
+
+        public String preCreateRegions = "&aKliknij F, jak skończysz zaznaczać drugi obszar!";
 
         public String createdBothRegions = "&aStworzono regiony!";
 
         public String createdHouse = "&aStworzono dom o id &e{HOUSE_ID}&a!";
+
+        public String createdApartmentHouse = "&aStworzono apartment o id &e{HOUSE_ID}&a w bloku &e{BLOCK}!";
 
         public String houseAlreadyExists = "&cDom o takim id &4({HOUSE_ID})&c już istnieje!";
 
@@ -67,6 +71,8 @@ public class MessageConfiguration implements ReloadableConfig {
 
         public String rentedHouse = "&aWynajęto dom o id &e{HOUSE_ID} &aza &e{PRICE}&a, na okres &e{RENT_TIME}&a dni!";
 
+        public String rentedApartment = "&aWynajęto dom o id &e{HOUSE_ID} &aw &e{BLOCK} &aza &e{PRICE}&a, na okres &e{RENT_TIME}&a dni!";
+
         public String notEnoughMoneyToRent = "&cNie masz wystarczająco pieniędzy na wynajem!";
 
         public String createdInvite = "&aKliknij na gracza, by dodać go do domu.";
@@ -75,7 +81,7 @@ public class MessageConfiguration implements ReloadableConfig {
 
         public String playerAddedToHouse = "&aGracz &e{PLAYER}&a potwierdził twoje zaproszenie - został on dodany do domu!";
 
-        public String joinedHouse = "&aDołączono do domu gracza &e{INVITER}&a!";
+        public String joinedHouse = "&aDołączono do domu gracza &e{INVITER}&a &e({HOUSE_ID})&a!";
 
         public String playerCancelledInvitation = "&cGracz &4{PLAYER}&c, odrzucił twoje zaproszenie do domu!";
 
@@ -91,7 +97,7 @@ public class MessageConfiguration implements ReloadableConfig {
 
         public String changedOwner = "&aGracz &e{PLAYER}&a potwierdził twoje zaproszenie -  został on nowym właścicielem domu!";
 
-        public String becomeOwner = "&aZostałeś nowym właścicielem domu!";
+        public String becomeOwner = "&aZostałeś nowym właścicielem domu! {HOUSE_ID}";
 
         public String playerCancelledOwnerInvitation = "&cGracz &4{PLAYER}&c, odrzucił twoje zaproszenie do zostania właścicielem domu!";
 
@@ -107,7 +113,7 @@ public class MessageConfiguration implements ReloadableConfig {
 
         public String addedCoOwnerSubject = "Zostałeś współwłaścicielem!";
 
-        public String addedCoOwnerMessage = "Zostałeś współwłaścicielem domu gracza {OWNER}!";
+        public String addedCoOwnerMessage = "Zostałeś współwłaścicielem domu gracza {OWNER}, {HOUSE_ID}!";
 
         public String removedCoOwner = "&cUsunięto gracza &4{PLAYER}&c z współwłaścicieli!";
 
@@ -284,6 +290,18 @@ public class MessageConfiguration implements ReloadableConfig {
                 " &7id domu: &e{HOUSE_ID}";
 
         public String previousApplicationNotAcceptedYet = "&cNie możesz złożyć kolejnego wniosku o renowację, dopóki poprzedni nie zostanie zaakceptowany!";
+
+        public String noRenovationInProgress = "&cNie ma aktualnie żadnego remontu w trakcie!";
+
+        public String noCoOwners = "&cBrak współwłaścicieli!";
+
+        public String noMembers = "&cBrak członków!";
+
+        public String alreadyCoOwner = "&cGracz jest już współwłaścicielem!";
+
+        public String cannotInviteOwner = "&cNie możesz zaprosić właściciela do domu!";
+
+        public String maxExtendRentDays = "&cNie możesz przedłużyć wynajmu o więcej niż {MAX_DAYS} dni!";
     }
 
     @Contextual

@@ -148,6 +148,7 @@ public class ApartamentRenovationInventory extends Inventory {
 
                 formatter.register("{RENOVATION_TYPE}", RenovationType.NON_INTERFERING.getName());
                 formatter.register("{REQUEST}", message);
+                formatter.register("{HOUSE}", house.getHouseId().replace('_', ' '));
                 formatter.register("{DAYS}", numberOfDays);
 
                 Consumer<UUID> confirmAction = (uuid) -> {
@@ -161,7 +162,7 @@ public class ApartamentRenovationInventory extends Inventory {
                     this.houseService.requestRenovation(house, renovationRequest);
 
                     AlertFormatter alertFormatter = new AlertFormatter();
-                    alertFormatter.register("{HOUSE}", house.getHouseId());
+                    alertFormatter.register("{HOUSE}", house.getHouseId().replace('_', ' '));
 
                     for (Player onlinePlayer : this.server.getOnlinePlayers()) {
                         if (!onlinePlayer.hasPermission(this.pluginConfiguration.renovationApplicationsPermission)) {

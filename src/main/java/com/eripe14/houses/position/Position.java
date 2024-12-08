@@ -1,6 +1,6 @@
 package com.eripe14.houses.position;
 
-import pl.craftcityrp.developerapi.data.DataBit;
+import com.eripe14.database.document.Document;
 
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Position extends DataBit {
+public class Position implements Document {
 
     public final static String NONE_WORLD = "__NONE__";
 
@@ -22,7 +22,6 @@ public class Position extends DataBit {
     private final String world;
 
     public Position(double x, double y, double z, float yaw, float pitch, String world) {
-        super(null);
         this.x = x;
         this.y = y;
         this.z = z;
@@ -113,24 +112,12 @@ public class Position extends DataBit {
                 '}';
     }
 
-    @Override
-    public Object asJson() {
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-
-        System.out.println( Double.parseDouble(decimalFormat.format(this.x)) + " -> x");
-
-        return Map.of(
-                "x",     this.getWithTwoPlaces(this.x),
-                "y",     this.getWithTwoPlaces(this.y),
-                "z",     this.getWithTwoPlaces(this.z),
-                "yaw",   (float) this.getWithTwoPlaces(this.yaw),
-                "pitch", (float) this.getWithTwoPlaces(this.pitch),
-                "world", this.world
-        );
-    }
-
     private double getWithTwoPlaces(double value) {
         return Math.floor(value * 100) / 100;
     }
 
+    @Override
+    public Class<? extends Document> getType() {
+        return this.getClass();
+    }
 }

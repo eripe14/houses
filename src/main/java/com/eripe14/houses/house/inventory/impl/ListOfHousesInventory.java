@@ -50,7 +50,7 @@ public class ListOfHousesInventory extends Inventory {
             Formatter formatter = new Formatter();
 
             for (House house : this.houseService.getHousesThatUserCanRenovate(player)) {
-                formatter.register("{HOUSE_ID}", house.getHouseId());
+                formatter.register("{HOUSE_ID}", house.getHouseId().replace("_", " "));
 
                 this.addItem(gui, listOfHouses.houseItem, event -> {
                     if (house.getCurrentRenovation().isPresent()) {
@@ -58,7 +58,7 @@ public class ListOfHousesInventory extends Inventory {
                         return;
                     }
 
-                    if (house.getRegion().getType() == HouseType.APARTMENT) {
+                    if (house.getRegion().getHouseType() == HouseType.APARTMENT) {
                         this.apartamentRenovationInventory.openInventory(player, house);
                         return;
                     }

@@ -50,9 +50,15 @@ public class AddCoOwnerAction implements InventoryClickAction {
 
             HouseMember houseMember = houseMemberOption.get();
 
+            if (houseMember.isCoOwner()) {
+                this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.alreadyCoOwner);
+                return;
+            }
+
             AlertFormatter formatter = new AlertFormatter();
             formatter.register("{OWNER}", house.getOwner().get().getName());
             formatter.register("{PLAYER}", houseMember.getMemberName());
+            formatter.register("{HOUSE_ID}", house.getHouseId().replace("_", " "));
 
             Alert alert = new Alert(
                     coOwnerUuid,

@@ -1,6 +1,6 @@
 package com.eripe14.houses.history;
 
-import pl.craftcityrp.developerapi.data.DataBit;
+import com.eripe14.database.document.Document;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class HistoryUser extends DataBit {
+public class HistoryUser implements Document {
 
     private final UUID uuid;
     private final String name;
@@ -20,7 +20,6 @@ public class HistoryUser extends DataBit {
     }
 
     public HistoryUser(UUID uuid, String name, Map<String, HistorySell> historyPurchase, Set<String> leftHouses) {
-        super(null);
         this.uuid = uuid;
         this.name = name;
         this.historyPurchase = historyPurchase;
@@ -52,12 +51,7 @@ public class HistoryUser extends DataBit {
     }
 
     @Override
-    public Object asJson() {
-        return Map.of(
-                "uuid",            this.uuid,
-                "name",            this.name,
-                "historyPurchase", this.historyPurchase,
-                "leftHouses",      this.leftHouses
-        );
+    public Class<? extends Document> getType() {
+        return this.getClass();
     }
 }

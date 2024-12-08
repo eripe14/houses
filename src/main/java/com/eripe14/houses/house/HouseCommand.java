@@ -1,6 +1,8 @@
 package com.eripe14.houses.house;
 
-import com.eripe14.houses.command.argument.BlockId;
+import com.eripe14.database.Database;
+import com.eripe14.database.data.DataService;
+import com.eripe14.houses.command.argument.RegionArgument;
 import com.eripe14.houses.configuration.ConfigurationManager;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
@@ -28,6 +30,7 @@ import com.eripe14.houses.util.DurationUtil;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import dev.rollczi.litecommands.annotations.argument.Arg;
 import dev.rollczi.litecommands.annotations.async.Async;
@@ -37,15 +40,18 @@ import dev.rollczi.litecommands.annotations.execute.Execute;
 import dev.rollczi.litecommands.annotations.permission.Permission;
 import net.dzikoysk.cdn.entity.Description;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import panda.std.Option;
 import panda.utilities.text.Formatter;
-import pl.craftcityrp.developerapi.data.DataManager;
 
 import java.util.Collection;
 import java.util.List;
@@ -65,7 +71,8 @@ public class HouseCommand {
     private final RenovationAcceptanceService renovationAcceptanceService;
     private final SchematicService schematicService;
     private final PolygonalRegionServiceImpl polygonalRegionService;
-    private final DataManager dataManager;
+    private final DataService dataService;
+    private final Database database;
     private final WorldGuard worldGuard;
     private final MessageConfiguration messageConfiguration;
     private final PluginConfiguration pluginConfiguration;
@@ -83,7 +90,8 @@ public class HouseCommand {
             RenovationAcceptanceService renovationAcceptanceService,
             SchematicService schematicService,
             PolygonalRegionServiceImpl polygonalRegionService,
-            DataManager dataManager,
+            DataService dataService,
+            Database database,
             WorldGuard worldGuard,
             MessageConfiguration messageConfiguration,
             PluginConfiguration pluginConfiguration,
@@ -100,7 +108,8 @@ public class HouseCommand {
         this.renovationAcceptanceService = renovationAcceptanceService;
         this.schematicService = schematicService;
         this.polygonalRegionService = polygonalRegionService;
-        this.dataManager = dataManager;
+        this.dataService = dataService;
+        this.database = database;
         this.worldGuard = worldGuard;
         this.messageConfiguration = messageConfiguration;
         this.pluginConfiguration = pluginConfiguration;
@@ -116,21 +125,62 @@ public class HouseCommand {
         player.sendMessage("Reloaded houses plugin configurations!");
     }
 
-    @Execute(name = "create", aliases = { "stworz" })
+    @Execute(name = "123")
+    void a123(@Context Player player) {
+        for (int i = 0; i < 200; i++) {
+            player.sendMessage(i + " ");
+        }
+    }
+
+    @Execute(name = "create_plot", aliases = { "stworz", "create" })
     @Description("Komenda do tworzenia domu")
     void create(@Context Player player,
-                @Arg String houseId,
+                @Arg("house-id") String houseId,
                 @Arg("house-district") HouseDistrict district,
                 @Arg("house-type") HouseType type,
-                @Arg("block-of-flats-id") BlockId blockOfFlatsId,
+                @Arg("block-of-flats-id") RegionArgument blockOfFlatsId,
                 @Arg("rental-price") Integer rentalPrice,
                 @Arg("buy-price") Optional<Integer> buyPrice) {
         Formatter formatter = new Formatter();
         formatter.register("{HOUSE_ID}", houseId);
+        formatter.register("{BLOCK}", blockOfFlatsId.regionName());
         formatter.register("{TIME}", DurationUtil.format(this.pluginConfiguration.timeToSetHomeRegion));
 
         if (this.houseService.isHouseExists(houseId)) {
             this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.houseAlreadyExists, formatter);
+            return;
+        }
+
+        if (type == HouseType.APARTMENT) {
+            ProtectedRegion blockOfFlatsRegion = this.worldGuard.getPlatform()
+                    .getRegionContainer()
+                    .get(BukkitAdapter.adapt(Bukkit.getWorld(PluginConfiguration.HOUSES_WORLD_NAME)))
+                    .getRegion(blockOfFlatsId.regionName());
+
+            this.polygonalRegionService.getApartmentRegion(player, houseId, blockOfFlatsRegion, district).whenComplete(((result, throwable) -> {
+                if (throwable != null) {
+                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.cantCreateApartment);
+                    return;
+                }
+
+                House house = this.houseService.createHouse(
+                        houseId.toLowerCase(),
+                        houseId.toLowerCase(),
+                        district,
+                        type,
+                        result,
+                        player.getLocation(),
+                        blockOfFlatsId.regionName(),
+                        rentalPrice,
+                        buyPrice.orElse(0)
+                );
+
+                this.houseService.addHouse(house);
+                this.polygonalRegionService.saveRegions(player.getWorld(), result, houseId);
+
+                this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.createdApartmentHouse, formatter);
+            }));
+
             return;
         }
 
@@ -156,7 +206,7 @@ public class HouseCommand {
                     type,
                     result,
                     player.getLocation(),
-                    blockOfFlatsId.getId(),
+                    blockOfFlatsId.regionName(),
                     rentalPrice,
                     buyPrice.orElse(0)
             );
@@ -181,15 +231,8 @@ public class HouseCommand {
 
     @Execute(name = "updateDatabase")
     void updateDatabase(@Context CommandSender player) {
-        this.dataManager.updateAllToBackend();
+        this.dataService.updateDatabase(this.database, "/");
         player.sendMessage("Updated database!");
-    }
-
-    @Execute(name = "clearDatabase")
-    void clearDatabase(@Context CommandSender player) {
-        this.dataManager.getData().clear();
-        this.updateDatabase(player);
-        player.sendMessage("Cleared database!");
     }
 
     @Execute(name = "schem", aliases = { "schematic", "schematic-backup" })
@@ -264,19 +307,81 @@ public class HouseCommand {
     }
 
     @Execute(name = "list", aliases = { "lista" })
-    void houseList(@Context Player player) {
+    void houseList(@Context Player player, @Arg Optional<Integer> pageOpt) {
         Formatter formatter = new Formatter();
 
         this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.houseListCommandHeader);
 
-        for (House house : this.houseService.getAllHouses()) {
+        List<House> houses = this.houseService.getAllHousesAsList();
+
+        int linesPerPage = 10;
+        int page = pageOpt.orElse(1);
+        int totalPages = (int) Math.ceil((double) houses.size() / linesPerPage);
+
+        if (page > totalPages) {
+            page = totalPages;
+        } else if (page < 1) {
+            page = 1;
+        }
+
+        int start = (page - 1) * linesPerPage;
+        int end = Math.min(start + linesPerPage, houses.size());
+
+        for (int i = start; i < end; i++) {
+            House house = houses.get(i);
+
             formatter.register("{HOUSE_ID}", house.getHouseId());
-            formatter.register("{HOUSE_TYPE}", house.getRegion().getType().name());
+            formatter.register("{HOUSE_TYPE}", house.getRegion().getHouseType().name());
             formatter.register("{HOUSE_DISTRICT}", house.getRegion().getDistrict().name());
             formatter.register("{HOUSE_OWNER}", house.getOwner().isPresent() ? house.getOwner().get().getName() : "Brak");
 
-            this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.houseListCommandEntry, formatter);
+            String houseInfo = formatter.format(this.messageConfiguration.house.houseListCommandEntry);
+            TextComponent houseComponent = Component.text(houseInfo);
+
+            TextComponent teleportButton = createClickableTextComponent(" [Teleportuj]", "#00AAFF", "/dom teleport " + house.getHouseId());
+            houseComponent = houseComponent.append(teleportButton);
+
+            this.notificationAnnouncer.sendMessage(player, houseComponent);
         }
+
+        if (totalPages > 1) {
+            TextComponent paginationMessage = Component.empty();
+
+            TextComponent pageInfo = Component.text("Strona " + page)
+                    .color(TextColor.fromHexString("#FFFF00"))
+                    .append(Component.text("/").color(TextColor.fromHexString("#808080")))
+                    .append(Component.text(totalPages).color(TextColor.fromHexString("#FFFF00")));
+            paginationMessage = paginationMessage.append(pageInfo);
+
+            if (page > 1) {
+                TextComponent previousPage = createClickableTextComponent(" « Strona wstecz", "#FF0000", page - 1);
+                paginationMessage = paginationMessage.append(previousPage);
+            }
+
+            if (page < totalPages) {
+                if (page > 1) {
+                    paginationMessage = paginationMessage.append(Component.text(" ".repeat(10)));
+                }
+                TextComponent nextPage = createClickableTextComponent(" Strona dalej »", "#00b000", page + 1);
+                paginationMessage = paginationMessage.append(nextPage);
+            }
+
+            this.notificationAnnouncer.sendMessage(player, paginationMessage);
+        }
+    }
+
+    private TextComponent createClickableTextComponent(String displayText, String hex, int targetPage) {
+        return Component.text(displayText)
+                .style(Style.style(TextDecoration.BOLD))
+                .color(TextColor.fromHexString(hex))
+                .clickEvent(ClickEvent.runCommand("/dom list " + targetPage));
+    }
+
+    private TextComponent createClickableTextComponent(String displayText, String hex, String command) {
+        return Component.text(displayText)
+                .style(Style.style(TextDecoration.BOLD))
+                .color(TextColor.fromHexString(hex))
+                .clickEvent(ClickEvent.runCommand(command));
     }
 
     @Execute(name = "edit", aliases = { "edytuj" })
@@ -285,7 +390,7 @@ public class HouseCommand {
             @Arg("house") House house,
             @Arg("house-district") HouseDistrict district,
             @Arg("house-type") HouseType type,
-            @Arg("block-of-flats-id") BlockId blockOfFlatsId,
+            @Arg("block-of-flats-id") RegionArgument blockOfFlatsId,
             @Arg("rental-price") Integer rentalPrice,
             @Arg("buy-price") Optional<Integer> buyPrice
     ) {
@@ -294,7 +399,7 @@ public class HouseCommand {
                 house.getHouseId(),
                 district,
                 type,
-                blockOfFlatsId.getId(),
+                blockOfFlatsId.regionName(),
                 rentalPrice,
                 buyPrice.orElse(0)
         );
@@ -307,7 +412,7 @@ public class HouseCommand {
     void houseInfo(@Context Player player, @Arg House house) {
         Formatter formatter = new Formatter();
         formatter.register("{HOUSE_ID}", house.getHouseId());
-        formatter.register("{HOUSE_TYPE}", house.getRegion().getType().name());
+        formatter.register("{HOUSE_TYPE}", house.getRegion().getHouseType().name());
         formatter.register("{HOUSE_DISTRICT}", house.getRegion().getDistrict().name());
         formatter.register("{PURCHASE_METHOD}",
                 house.getRent().isPresent() ?
@@ -327,6 +432,14 @@ public class HouseCommand {
                         "Brak"
         );
 
+        ClickEvent callback = ClickEvent.runCommand("/dom teleport " + house.getHouseId());
+        Component clickComponent = Component.text()
+                .content("[TELEPORT]")
+                .color(TextColor.fromHexString("#4CBB17"))
+                .clickEvent(callback)
+                .build();
+
+        this.notificationAnnouncer.sendMessage(player, clickComponent);
         this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.houseInfo, formatter);
         this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.houseInfoMembersHeader, formatter);
 
@@ -513,6 +626,14 @@ public class HouseCommand {
         ItemStack renovationAcceptance = this.pluginConfiguration.renovationAcceptanceItem.asGuiItem().getItemStack();
 
         List.of(snowball, lockpick, kickDoor, renovationAcceptance).forEach(item -> player.getInventory().addItem(item));
+    }
+
+    @Execute(name = "teleport")
+    void teleport(@Context Player player, @Arg("house-id") String houseId) {
+        this.houseService.getHouse(houseId).peek((house) -> {
+            player.teleport(house.getRegion().getHouseCenter());
+            player.setGameMode(GameMode.SPECTATOR);
+        });
     }
 
 }

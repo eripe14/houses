@@ -1,27 +1,24 @@
 package com.eripe14.houses.house.renovation;
 
+import com.eripe14.database.document.Document;
 import com.eripe14.houses.position.Position;
 import com.eripe14.houses.position.PositionAdapter;
 import org.bukkit.Location;
-import pl.craftcityrp.developerapi.data.DataBit;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-public class RenovationData extends DataBit {
+public class RenovationData implements Document {
 
     private final String houseId;
     private final Set<Position> placedBlocks;
 
     public RenovationData(String houseId) {
-        super(null);
         this.houseId = houseId;
         this.placedBlocks = new HashSet<>();
     }
 
     public RenovationData(String houseId, Set<Position> placedBlocks) {
-        super(null);
         this.houseId = houseId;
         this.placedBlocks = placedBlocks;
     }
@@ -43,10 +40,7 @@ public class RenovationData extends DataBit {
     }
 
     @Override
-    public Object asJson() {
-        return Map.of(
-                "houseId", this.houseId,
-                "placedBlocks", this.placedBlocks
-        );
+    public Class<? extends Document> getType() {
+        return this.getClass();
     }
 }

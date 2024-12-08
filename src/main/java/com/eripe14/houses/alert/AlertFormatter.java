@@ -1,17 +1,16 @@
 package com.eripe14.houses.alert;
 
+import com.eripe14.database.document.Document;
 import panda.utilities.text.Formatter;
-import pl.craftcityrp.developerapi.data.DataBit;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AlertFormatter extends DataBit {
+public class AlertFormatter implements Document {
 
     private final Map<String, String> placeholders;
 
     public AlertFormatter(Map<String, String> placeholders) {
-        super(null);
         this.placeholders = placeholders;
     }
 
@@ -48,10 +47,7 @@ public class AlertFormatter extends DataBit {
     }
 
     @Override
-    public Object asJson() {
-        return Map.of(
-            "placeholders", this.placeholders
-        );
+    public Class<? extends Document> getType() {
+        return this.getClass();
     }
-
 }

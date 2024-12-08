@@ -48,7 +48,7 @@ public class BuyHouseAction implements InventoryClickAction {
     @Override
     public Consumer<UUID> clickAction(Player player, House house, Gui gui) {
         Formatter formatter = new Formatter();
-        formatter.register("{HOUSE_ID}", house.getHouseId());
+        formatter.register("{HOUSE_ID}", house.getHouseId().replace("_", " "));
         formatter.register("{BUY_PRICE}", house.getBuyPrice());
 
         Consumer<UUID> acceptAction = (uuid) -> {

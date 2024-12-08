@@ -58,7 +58,7 @@ public class ChangePermissionsInventory extends Inventory {
             AlertFormatter formatter = new AlertFormatter();
             formatter.register("{OWNER}", house.getOwner().get().getName());
             formatter.register("{PLAYER}", houseMember.getMemberName());
-            formatter.register("{HOUSE}", house.getHouseId());
+            formatter.register("{HOUSE}", house.getHouseId().replace('_', ' '));
             formatter.register(
                     "{STATUS_OPEN_DOOR}",
                     String.valueOf(this.houseMemberService.hasPermission(houseMember, HouseMemberPermission.OPEN_DOORS))

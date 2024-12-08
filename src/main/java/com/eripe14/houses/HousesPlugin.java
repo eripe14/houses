@@ -1,12 +1,21 @@
 package com.eripe14.houses;
 
+import com.eripe14.database.Database;
+import com.eripe14.database.DatabaseApi;
+import com.eripe14.database.DatabaseProvider;
+import com.eripe14.database.data.DataService;
+import com.eripe14.database.document.Document;
+import com.eripe14.database.document.DocumentTypeRegistry;
+import com.eripe14.houses.alert.Alert;
 import com.eripe14.houses.alert.AlertController;
+import com.eripe14.houses.alert.AlertFormatter;
 import com.eripe14.houses.alert.AlertHandler;
 import com.eripe14.houses.alert.AlertHandlerImpl;
 import com.eripe14.houses.alert.AlertService;
-import com.eripe14.houses.command.argument.BlockId;
-import com.eripe14.houses.command.argument.BlockIdsResolver;
+import com.eripe14.houses.command.argument.HouseCreateSuggester;
 import com.eripe14.houses.command.argument.HouseResolver;
+import com.eripe14.houses.command.argument.RegionArgument;
+import com.eripe14.houses.command.argument.RegionResolver;
 import com.eripe14.houses.command.handler.InvalidUsageHandler;
 import com.eripe14.houses.command.handler.MissingPermissionsHandler;
 import com.eripe14.houses.configuration.ConfigurationManager;
@@ -14,6 +23,8 @@ import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import com.eripe14.houses.configuration.implementation.RobberyConfiguration;
+import com.eripe14.houses.history.HistorySell;
+import com.eripe14.houses.history.HistoryUser;
 import com.eripe14.houses.history.HistoryUserController;
 import com.eripe14.houses.history.HistoryUserService;
 import com.eripe14.houses.hook.HookService;
@@ -23,6 +34,7 @@ import com.eripe14.houses.house.House;
 import com.eripe14.houses.house.HouseCommand;
 import com.eripe14.houses.house.HouseService;
 import com.eripe14.houses.house.alarm.AlarmController;
+import com.eripe14.houses.house.furniture.HouseCustomFurniture;
 import com.eripe14.houses.house.inventory.action.impl.AddCoOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.AddPlayerAction;
 import com.eripe14.houses.house.inventory.action.impl.BuyHouseAction;
@@ -31,7 +43,6 @@ import com.eripe14.houses.house.inventory.action.impl.ChangePermissionsAction;
 import com.eripe14.houses.house.inventory.action.impl.ExtendRentAction;
 import com.eripe14.houses.house.inventory.action.impl.RemoveCoOwnerAction;
 import com.eripe14.houses.house.inventory.action.impl.RemovePlayerAction;
-import com.eripe14.houses.house.inventory.action.impl.RenovateAction;
 import com.eripe14.houses.house.inventory.action.impl.SellHouseAction;
 import com.eripe14.houses.house.inventory.impl.ApartamentRenovationInventory;
 import com.eripe14.houses.house.inventory.impl.ApartmentListInventory;
@@ -51,12 +62,15 @@ import com.eripe14.houses.house.inventory.impl.RentedPanelInventory;
 import com.eripe14.houses.house.inventory.impl.SelectPurchaseInventory;
 import com.eripe14.houses.house.invite.HouseInviteController;
 import com.eripe14.houses.house.invite.HouseInviteService;
+import com.eripe14.houses.house.member.HouseMember;
 import com.eripe14.houses.house.member.HouseMemberService;
+import com.eripe14.houses.house.owner.Owner;
 import com.eripe14.houses.house.panel.HousePanelController;
 import com.eripe14.houses.house.purchase.HouseApartmentPurchaseController;
 import com.eripe14.houses.house.purchase.HousePurchaseService;
 import com.eripe14.houses.house.purchase.HouseSellService;
 import com.eripe14.houses.house.purchase.PurchaseFurnitureController;
+import com.eripe14.houses.house.region.HouseRegion;
 import com.eripe14.houses.house.region.PolygonalRegionServiceImpl;
 import com.eripe14.houses.house.region.protection.ProtectionHandler;
 import com.eripe14.houses.house.region.protection.ProtectionHandlerImpl;
@@ -68,17 +82,23 @@ import com.eripe14.houses.house.region.protection.controller.PlaceFurnitureContr
 import com.eripe14.houses.house.region.protection.controller.RenovationController;
 import com.eripe14.houses.house.region.selection.HouseSelectionController;
 import com.eripe14.houses.house.region.selection.HouseSelectionService;
+import com.eripe14.houses.house.renovation.Renovation;
 import com.eripe14.houses.house.renovation.RenovationApplicationsController;
+import com.eripe14.houses.house.renovation.RenovationData;
 import com.eripe14.houses.house.renovation.RenovationExpireTask;
 import com.eripe14.houses.house.renovation.RenovationInventoryController;
 import com.eripe14.houses.house.renovation.RenovationService;
+import com.eripe14.houses.house.renovation.request.RenovationRequest;
 import com.eripe14.houses.house.renovation.request.RenovationRequestService;
 import com.eripe14.houses.house.renovation.request.acceptance.RenovationAcceptanceController;
+import com.eripe14.houses.house.renovation.request.acceptance.RenovationAcceptanceRequest;
 import com.eripe14.houses.house.renovation.request.acceptance.RenovationAcceptanceService;
+import com.eripe14.houses.house.rent.Rent;
 import com.eripe14.houses.house.rent.RentController;
 import com.eripe14.houses.house.rent.RentEndTask;
 import com.eripe14.houses.house.rent.RentService;
 import com.eripe14.houses.notification.NotificationAnnouncer;
+import com.eripe14.houses.position.Position;
 import com.eripe14.houses.purchase.PurchaseService;
 import com.eripe14.houses.robbery.RobberyService;
 import com.eripe14.houses.robbery.RobberyStartHandler;
@@ -110,9 +130,14 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
-import pl.craftcityrp.developerapi.data.DataManager;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ConfigurationBuilder;
+import org.w3c.dom.DocumentType;
 
 import java.time.Duration;
+import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -127,7 +152,9 @@ public class HousesPlugin extends JavaPlugin {
     private RobberyConfiguration robberyConfiguration;
     private InventoryConfiguration inventoryConfiguration;
 
-    private DataManager dataManager;
+    private DatabaseApi databaseApi;
+    private DataService dataService;
+    private Database database;
 
     private AudienceProvider audienceProvider;
     private MiniMessage miniMessage;
@@ -186,7 +213,6 @@ public class HousesPlugin extends JavaPlugin {
     private ExtendRentAction extendRentAction;
     private ChangeOwnerAction changeOwnerAction;
     private SellHouseAction sellHouseAction;
-    private RenovateAction renovateAction;
     private BuyHouseAction buyHouseAction;
 
     private ConfirmInventory confirmInventory;
@@ -209,6 +235,11 @@ public class HousesPlugin extends JavaPlugin {
     private LiteCommands<CommandSender> liteCommands;
 
     @Override
+    public void onLoad() {
+        this.setUpDocuments();
+    }
+
+    @Override
     public void onEnable() {
         Server server = this.getServer();
         Logger logger = this.getLogger();
@@ -222,7 +253,9 @@ public class HousesPlugin extends JavaPlugin {
         this.robberyConfiguration = this.configurationManager.load(new RobberyConfiguration());
         this.inventoryConfiguration = this.configurationManager.load(new InventoryConfiguration());
 
-        this.dataManager = new DataManager(this.pluginConfiguration.serviceId, this.pluginConfiguration.serviceToken);
+        this.databaseApi = DatabaseProvider.provide();
+        this.dataService = this.databaseApi.getDataService();
+        this.database = this.dataService.getOrCreateDatabase("houses_system", "/");
 
         this.audienceProvider = BukkitAudiences.create(this);
         this.miniMessage = MiniMessage.builder()
@@ -261,16 +294,15 @@ public class HousesPlugin extends JavaPlugin {
 
         this.eventCaller = new EventCaller(server);
 
-        this.historyUserService = new HistoryUserService(this.dataManager);
+        this.historyUserService = new HistoryUserService(this.database);
 
-        this.renovationRequestService = new RenovationRequestService(this.dataManager);
-        this.renovationService = new RenovationService(this.dataManager);
-        this.renovationAcceptanceService = new RenovationAcceptanceService(this.dataManager);
+        this.renovationRequestService = new RenovationRequestService(this.database);
+        this.renovationService = new RenovationService(this.database);
+        this.renovationAcceptanceService = new RenovationAcceptanceService(this.database);
 
         this.houseService = new HouseService(
-                this.protectionService,
-                this.dataManager,
-                server
+                this.database,
+                this.protectionService
         );
         this.houseInviteService = new HouseInviteService(this.eventCaller, this.pluginConfiguration);
         this.houseMemberService = new HouseMemberService(this.houseService, this.pluginConfiguration);
@@ -291,7 +323,7 @@ public class HousesPlugin extends JavaPlugin {
                 this.pluginConfiguration
         );
 
-        this.rentService = new RentService(this.dataManager);
+        this.rentService = new RentService(this.database);
 
         this.protectionHandler = new ProtectionHandlerImpl(
                 this.houseService,
@@ -301,7 +333,7 @@ public class HousesPlugin extends JavaPlugin {
                 this.pluginConfiguration
         );
 
-        this.alertService = new AlertService(this.dataManager);
+        this.alertService = new AlertService(this.database);
         this.alertHandler = new AlertHandlerImpl(
                 server,
                 this.alertService,
@@ -371,6 +403,7 @@ public class HousesPlugin extends JavaPlugin {
                 this.confirmInventory,
                 this.notificationAnnouncer,
                 this.inventoryConfiguration,
+                this.pluginConfiguration,
                 this.messageConfiguration
         );
         this.rentInventory = new RentInventory(
@@ -469,6 +502,7 @@ public class HousesPlugin extends JavaPlugin {
                 this.alertHandler,
                 this.schematicService,
                 this.messageConfiguration,
+                this.notificationAnnouncer,
                 this.inventoryConfiguration,
                 this.pluginConfiguration
         );
@@ -487,6 +521,7 @@ public class HousesPlugin extends JavaPlugin {
                 this.scheduler,
                 this.houseService,
                 this.selectPurchaseInventory,
+                this.rentInventory,
                 this.inventoryConfiguration
         );
         this.listOfHousesInventory = new ListOfHousesInventory(
@@ -561,14 +596,6 @@ public class HousesPlugin extends JavaPlugin {
                 this.inventoryConfiguration,
                 this.pluginConfiguration
         );
-        this.renovateAction = new RenovateAction(
-                this.renovationInventory,
-                this.renovationAcceptanceService,
-                this.apartamentRenovationInventory,
-                this.menageRenovationInventory,
-                this.notificationAnnouncer,
-                this.messageConfiguration
-        );
         this.buyHouseAction = new BuyHouseAction(
                 this.housePurchaseService,
                 this.houseService,
@@ -627,6 +654,7 @@ public class HousesPlugin extends JavaPlugin {
                 new HouseInviteController(
                         server,
                         this.houseInviteService,
+                        this.houseMemberService,
                         this.confirmInventory,
                         this.messageConfiguration,
                         this.notificationAnnouncer,
@@ -751,7 +779,7 @@ public class HousesPlugin extends JavaPlugin {
                         this.protectionService,
                         this.pluginConfiguration
                 ),
-                new DataSaveController(this.dataManager),
+                new DataSaveController(this, this.dataService, this.database),
                 new HouseSelectionController(this.houseSelectionService),
                 new HouseApartmentPurchaseController(
                         this.apartmentListInventory,
@@ -775,7 +803,7 @@ public class HousesPlugin extends JavaPlugin {
                 .missingPermission(new MissingPermissionsHandler(this.messageConfiguration, this.notificationAnnouncer))
                 .invalidUsage(new InvalidUsageHandler(this.messageConfiguration, this.notificationAnnouncer))
                 .argument(House.class, new HouseResolver(this.houseService))
-                .argument(BlockId.class, new BlockIdsResolver(this.houseService))
+                .argument(RegionArgument.class, new RegionResolver(this.protectionService))
                 .argumentSuggestion(
                         String.class,
                         ArgumentKey.of("schematic-name"),
@@ -800,6 +828,7 @@ public class HousesPlugin extends JavaPlugin {
                                         .toList()
                         )
                 )
+                .argumentSuggester(String.class, ArgumentKey.of("house-id"), new HouseCreateSuggester(this.houseService))
                 .commands(
                         new HouseCommand(
                                 this.houseService,
@@ -811,7 +840,8 @@ public class HousesPlugin extends JavaPlugin {
                                 this.renovationAcceptanceService,
                                 this.schematicService,
                                 this.polygonalRegionService,
-                                this.dataManager,
+                                this.dataService,
+                                this.database,
                                 this.worldGuard,
                                 this.messageConfiguration,
                                 this.pluginConfiguration,
@@ -831,6 +861,20 @@ public class HousesPlugin extends JavaPlugin {
 
         if (this.liteCommands != null) {
             this.liteCommands.getCommandManager().unregisterAll();
+        }
+    }
+
+    private void setUpDocuments() {
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .forPackage("com.eripe14.houses")
+                .addScanners(Scanners.SubTypes)
+        );
+
+        Set<Class<? extends Document>> documentClasses = reflections.getSubTypesOf(Document.class);
+
+        for (Class<? extends Document> documentClass : documentClasses) {
+            DocumentTypeRegistry.registerType(documentClass);
+            this.getServer().getLogger().log(Level.INFO, "Registered document type: " + documentClass.getSimpleName());
         }
     }
 

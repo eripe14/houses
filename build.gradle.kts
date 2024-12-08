@@ -22,7 +22,7 @@ repositories {
     maven { url = uri("https://oss.sonatype.org/content/groups/public/") }
     maven {
         name = "GitHubPackages"
-        url = uri("https://maven.pkg.github.com/craftcityrp/ccrpdev-api")
+        url = uri("https://maven.pkg.github.com/craftcityrp/ccrp-database2")
         credentials {
             username = "eripe14"
             password = System.getenv("GITHUB_TOKEN") ?: ""
@@ -34,7 +34,7 @@ dependencies {
     // Spigot
     compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
 
-    compileOnly("pl.craftcityrp.developerapi:ccrpdev-api:1.8-SNAPSHOT")
+    compileOnly("com.eripe14:database-api:2.0.2-SNAPSHOT")
 
     // Kyori Adventure
     implementation("net.kyori:adventure-platform-bukkit:4.3.2")
@@ -76,6 +76,9 @@ dependencies {
 
     // Expiring Map
     implementation("net.jodah:expiringmap:0.5.11")
+
+    // Reflections
+    implementation("org.reflections:reflections:0.10.2")
 }
 
 bukkit {

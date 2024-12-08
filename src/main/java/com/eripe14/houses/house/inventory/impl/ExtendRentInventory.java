@@ -2,6 +2,7 @@ package com.eripe14.houses.house.inventory.impl;
 
 import com.eripe14.houses.configuration.implementation.InventoryConfiguration;
 import com.eripe14.houses.configuration.implementation.MessageConfiguration;
+import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import com.eripe14.houses.house.House;
 import com.eripe14.houses.house.HouseService;
 import com.eripe14.houses.house.inventory.Inventory;
@@ -34,6 +35,7 @@ public class ExtendRentInventory extends Inventory {
     private final ConfirmInventory confirmInventory;
     private final NotificationAnnouncer notificationAnnouncer;
     private final InventoryConfiguration inventoryConfiguration;
+    private final PluginConfiguration pluginConfiguration;
     private final MessageConfiguration messageConfiguration;
 
     public ExtendRentInventory(
@@ -44,6 +46,7 @@ public class ExtendRentInventory extends Inventory {
             ConfirmInventory confirmInventory,
             NotificationAnnouncer notificationAnnouncer,
             InventoryConfiguration inventoryConfiguration,
+            PluginConfiguration pluginConfiguration,
             MessageConfiguration messageConfiguration
     ) {
         this.scheduler = scheduler;
@@ -53,6 +56,7 @@ public class ExtendRentInventory extends Inventory {
         this.confirmInventory = confirmInventory;
         this.notificationAnnouncer = notificationAnnouncer;
         this.inventoryConfiguration = inventoryConfiguration;
+        this.pluginConfiguration = pluginConfiguration;
         this.messageConfiguration = messageConfiguration;
     }
 
@@ -76,12 +80,23 @@ public class ExtendRentInventory extends Inventory {
             formatter.register("{DAYS_LEFT}", currentDays);
             formatter.register("{DAYS}", days);
             formatter.register("{PRICE}", days.get() * rent.getPricePerDay());
+            formatter.register("{MAX_DAYS}", this.pluginConfiguration.maxExtendRentDays);
 
             if (extendRentInventory.fillEmptySlots) {
                 gui.getFiller().fill(extendRentInventory.filler.asGuiItem());
             }
 
             GuiAction<InventoryClickEvent> extendRentAction = (event) -> {
+                if (days.get() > this.pluginConfiguration.maxExtendRentDays) {
+                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.maxExtendRentDays, formatter);
+                    return;
+                }
+
+                if (days.get() <= 0) {
+                    this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.requiredExtendRentTime);
+                    return;
+                }
+
                 if (!this.purchaseService.hasEnoughMoney(player, days.get() * rent.getPricePerDay())) {
                     this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.notEnoughMoneyToRent, formatter);
                     gui.close(player);
@@ -132,12 +147,17 @@ public class ExtendRentInventory extends Inventory {
             });
 
             this.setItem(gui, extendRentInventory.removeDayItem, event -> {
-                if (days.get() <= 0 || days.get() - 10 <= 0) {
+                if (days.get() <= 0) {
                     this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.requiredExtendRentTime);
                     return;
                 }
 
                 if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
+                    if (days.get() <= 0 || days.get() - 10 <= 0) {
+                        this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.requiredExtendRentTime);
+                        return;
+                    }
+
                     this.updateFormatter(formatter, days.decrementAndGet() - 9, rent);
                     this.setItem(gui, extendRentInventory.extendRentItem, extendRentAction, formatter);
 

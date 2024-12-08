@@ -135,7 +135,7 @@ public class RenovationInventory extends Inventory {
     private void handle(Player player, House house, RenovationType type, Gui gui) {
         AlertFormatter formatter = new AlertFormatter();
         formatter.register("{TIME}", String.valueOf(this.pluginConfiguration.maxRenovationDays));
-        formatter.register("{HOUSE}", house.getHouseId());
+        formatter.register("{HOUSE}", house.getHouseId().replace("_", " "));
 
         this.textProvider.getPlayerInput(player).whenComplete((message, throwable) -> {
             if (message == null || message.isEmpty()) {
@@ -176,6 +176,7 @@ public class RenovationInventory extends Inventory {
 
                 formatter.register("{RENOVATION_TYPE}", renovationType.getName());
                 formatter.register("{REQUEST}", message);
+                formatter.register("{HOUSE}", house.getHouseId().replace("_", " "));
                 formatter.register("{DAYS}", numberOfDays);
 
                 Consumer<UUID> confirmAction = (uuid) -> {
@@ -189,7 +190,7 @@ public class RenovationInventory extends Inventory {
                     this.houseService.requestRenovation(house, renovationRequest);
 
                     AlertFormatter alertFormatter = new AlertFormatter();
-                    alertFormatter.register("{HOUSE}", house.getHouseId());
+                    alertFormatter.register("{HOUSE}", house.getHouseId().replace("_", " "));
 
                     for (Player onlinePlayer : this.server.getOnlinePlayers()) {
                         if (!onlinePlayer.hasPermission(this.pluginConfiguration.renovationApplicationsPermission)) {

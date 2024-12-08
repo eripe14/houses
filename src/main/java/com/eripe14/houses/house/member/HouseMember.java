@@ -1,13 +1,13 @@
 package com.eripe14.houses.house.member;
 
+import com.eripe14.database.document.Document;
 import panda.std.Option;
-import pl.craftcityrp.developerapi.data.DataBit;
 
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
-public class HouseMember extends DataBit {
+public class HouseMember implements Document {
 
     private final Instant joinedAt;
     private final String memberName;
@@ -18,7 +18,6 @@ public class HouseMember extends DataBit {
     private Option<Instant> coOwnerAt;
 
     public HouseMember(String memberName, UUID memberUuid, String houseId, Map<HouseMemberPermission, Boolean> permissions, boolean isCoOwner) {
-        super(null);
         this.joinedAt = Instant.now();
         this.memberName = memberName;
         this.memberUuid = memberUuid;
@@ -37,7 +36,6 @@ public class HouseMember extends DataBit {
             boolean isCoOwner,
             Option<Instant> coOwnerAt
     ) {
-        super(null);
         this.joinedAt = joinedAt;
         this.memberName = memberName;
         this.memberUuid = memberUuid;
@@ -88,21 +86,7 @@ public class HouseMember extends DataBit {
     }
 
     @Override
-    public Object asJson() {
-        Instant coOwnerAt = null;
-
-        if (this.coOwnerAt.isPresent()) {
-            coOwnerAt = this.coOwnerAt.get();
-        }
-
-        return Map.of(
-                "joinedAt", this.joinedAt.toString(),
-                "memberName", this.memberName,
-                "memberUuid", this.memberUuid,
-                "houseId", this.houseId,
-                "permissions", this.permissions,
-                "isCoOwner", this.isCoOwner,
-                "coOwnerAt", coOwnerAt == null ? "-" : coOwnerAt.toString()
-        );
+    public Class<? extends Document> getType() {
+        return this.getClass();
     }
 }

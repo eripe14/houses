@@ -102,14 +102,8 @@ public class PolygonalRegionServiceImpl implements RegionService {
 
     @Override
     public void killAllFurniture(HouseRegion houseRegion) {
-        int i = 0;
         for (ArmorStand armorStand : houseRegion.getWorld().getEntitiesByClass(ArmorStand.class)) {
-            System.out.println(i);
-            i++;
-            System.out.println(armorStand.getLocation().toString());
             ApplicableRegionSet locationRegions = this.protectionService.getLocationRegions(armorStand.getLocation());
-
-            System.out.println("size: " + locationRegions.getRegions().size());
 
             if (locationRegions.getRegions().isEmpty()) {
                 continue;
@@ -118,7 +112,6 @@ public class PolygonalRegionServiceImpl implements RegionService {
             for (ProtectedRegion region : locationRegions.getRegions()) {
                 if (houseRegion.getPlot().getId().equalsIgnoreCase(region.getId())
                         || houseRegion.getHouse().getId().equalsIgnoreCase(region.getId())) {
-                    System.out.println("Killing furniture");
                     armorStand.remove();
                 }
             }
@@ -176,6 +169,43 @@ public class PolygonalRegionServiceImpl implements RegionService {
                 finalRegionResultCompletableFuture.complete(failure);
             }
         });
+
+        return finalRegionResultCompletableFuture;
+    }
+
+    @Override
+    public CompletableFuture<FinalRegionResult> getApartmentRegion(Player player, String houseId, ProtectedRegion blockOfFlatsRegion, HouseDistrict houseDistrict) {
+        CompletableFuture<FinalRegionResult> finalRegionResultCompletableFuture = new CompletableFuture<>();
+
+        String houseRegionName = this.getRegionName("house_apartment", houseId, houseDistrict, HouseType.APARTMENT);
+
+        RegionResult apartmentRegionResult = this.getRegion(player, houseRegionName);
+        FinalRegionResult failure = new FinalRegionResult(false, Option.none(), Option.none());
+
+        if (!apartmentRegionResult.success()) {
+            finalRegionResultCompletableFuture.complete(failure);
+            return finalRegionResultCompletableFuture;
+        }
+
+        try {
+            ProtectedRegion apartmentRegion = apartmentRegionResult.optionalRegion().get();
+            apartmentRegion.setPriority(10);
+            apartmentRegion.setParent(blockOfFlatsRegion);
+
+            StateFlag[] flags = { Flags.CHEST_ACCESS, Flags.USE, Flags.BLOCK_PLACE, Flags.BLOCK_BREAK, Flags.PASSTHROUGH };
+
+            for (StateFlag flag : flags) {
+                apartmentRegion.setFlag(flag, StateFlag.State.ALLOW);
+            }
+
+            finalRegionResultCompletableFuture.complete(
+                    new FinalRegionResult(true, Option.of(apartmentRegion), Option.of(apartmentRegion))
+            );
+
+            this.scheduler.sync(() -> this.server.dispatchCommand(player, "/sel"));
+        } catch (ProtectedRegion.CircularInheritanceException e) {
+            finalRegionResultCompletableFuture.complete(failure);
+        }
 
         return finalRegionResultCompletableFuture;
     }

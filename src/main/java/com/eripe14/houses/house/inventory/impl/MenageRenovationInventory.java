@@ -12,8 +12,10 @@ import com.eripe14.houses.house.inventory.Inventory;
 import com.eripe14.houses.house.renovation.Renovation;
 import com.eripe14.houses.house.renovation.RenovationService;
 import com.eripe14.houses.house.renovation.request.acceptance.RenovationAcceptanceService;
+import com.eripe14.houses.notification.NotificationAnnouncer;
 import com.eripe14.houses.scheduler.Scheduler;
 import com.eripe14.houses.schematic.SchematicService;
+import com.eripe14.houses.util.DurationUtil;
 import com.eripe14.houses.util.adventure.Legacy;
 import dev.triumphteam.gui.guis.Gui;
 import org.bukkit.Server;
@@ -30,6 +32,7 @@ public class MenageRenovationInventory extends Inventory {
     private final AlertHandler alertHandler;
     private final SchematicService schematicService;
     private final MessageConfiguration messageConfiguration;
+    private final NotificationAnnouncer notificationAnnouncer;
     private final InventoryConfiguration inventoryConfiguration;
     private final PluginConfiguration pluginConfiguration;
 
@@ -42,6 +45,7 @@ public class MenageRenovationInventory extends Inventory {
             AlertHandler alertHandler,
             SchematicService schematicService,
             MessageConfiguration messageConfiguration,
+            NotificationAnnouncer notificationAnnouncer,
             InventoryConfiguration inventoryConfiguration,
             PluginConfiguration pluginConfiguration
     ) {
@@ -53,6 +57,7 @@ public class MenageRenovationInventory extends Inventory {
         this.alertHandler = alertHandler;
         this.schematicService = schematicService;
         this.messageConfiguration = messageConfiguration;
+        this.notificationAnnouncer = notificationAnnouncer;
         this.inventoryConfiguration = inventoryConfiguration;
         this.pluginConfiguration = pluginConfiguration;
     }
@@ -71,10 +76,13 @@ public class MenageRenovationInventory extends Inventory {
             Option<Renovation> renovationOption = house.getCurrentRenovation();
 
             if (renovationOption.isEmpty()) {
+                this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.noRenovationInProgress);
                 return;
             }
 
             Renovation renovation = renovationOption.get();
+
+            formatter.register("{DATE}", DurationUtil.format(renovation.getStartMoment()));
 
             if (this.inventoryConfiguration.menageRenovation.fillEmptySlots) {
                 gui.getFiller().fill(this.inventoryConfiguration.menageRenovation.filler.asGuiItem());
@@ -110,7 +118,7 @@ public class MenageRenovationInventory extends Inventory {
 
                 this.alertHandler.sendAlertIfPlayerNotOnline(player.getUniqueId(), alert);
                 gui.close(player);
-            });
+            }, formatter);
 
             this.setItem(gui, this.inventoryConfiguration.menageRenovation.closeInventoryItem, event -> {
                 gui.close(player);

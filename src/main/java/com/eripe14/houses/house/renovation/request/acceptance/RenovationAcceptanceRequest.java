@@ -1,12 +1,11 @@
 package com.eripe14.houses.house.renovation.request.acceptance;
 
+import com.eripe14.database.document.Document;
 import com.eripe14.houses.house.renovation.RenovationType;
-import pl.craftcityrp.developerapi.data.DataBit;
 
 import java.time.Instant;
-import java.util.Map;
 
-public class RenovationAcceptanceRequest extends DataBit {
+public class RenovationAcceptanceRequest implements Document {
 
     private final String houseId;
     private final RenovationType renovationType;
@@ -19,7 +18,6 @@ public class RenovationAcceptanceRequest extends DataBit {
             Instant startMoment,
             Instant endMoment
     ) {
-        super(null);
         this.houseId = houseId;
         this.renovationType = renovationType;
         this.startMoment = startMoment;
@@ -43,12 +41,7 @@ public class RenovationAcceptanceRequest extends DataBit {
     }
 
     @Override
-    public Object asJson() {
-        return Map.of(
-                "houseId", this.houseId,
-                "renovationType", this.renovationType.name(),
-                "startMoment", this.startMoment.toString(),
-                "endMoment", this.endMoment.toString()
-        );
+    public Class<? extends Document> getType() {
+        return this.getClass();
     }
 }

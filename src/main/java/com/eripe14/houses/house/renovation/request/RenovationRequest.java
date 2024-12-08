@@ -1,13 +1,12 @@
 package com.eripe14.houses.house.renovation.request;
 
+import com.eripe14.database.document.Document;
 import com.eripe14.houses.house.renovation.RenovationType;
-import pl.craftcityrp.developerapi.data.DataBit;
 
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
-public class RenovationRequest extends DataBit {
+public class RenovationRequest implements Document {
 
     private final UUID sender;
     private final String senderName;
@@ -18,7 +17,6 @@ public class RenovationRequest extends DataBit {
     private final Instant creationTime;
 
     public RenovationRequest(UUID sender, String senderName, String houseId, RenovationType renovationType, int renovationDays, String request) {
-        super(null);
         this.sender = sender;
         this.senderName = senderName;
         this.houseId = houseId;
@@ -29,7 +27,6 @@ public class RenovationRequest extends DataBit {
     }
 
     public RenovationRequest(UUID sender, String senderName, String houseId, RenovationType renovationType, int renovationDays, String request, Instant creationTime) {
-        super(null);
         this.sender = sender;
         this.senderName = senderName;
         this.houseId = houseId;
@@ -68,15 +65,7 @@ public class RenovationRequest extends DataBit {
     }
 
     @Override
-    public Object asJson() {
-        return Map.of(
-                "sender", this.sender,
-                "senderName", this.senderName,
-                "houseId", this.houseId,
-                "renovationType", this.renovationType,
-                "renovationDays", this.renovationDays,
-                "request", this.request,
-                "creationTime", this.creationTime.toString()
-        );
+    public Class<? extends Document> getType() {
+        return this.getClass();
     }
 }

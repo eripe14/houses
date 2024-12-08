@@ -1,17 +1,14 @@
 package com.eripe14.houses.house.furniture;
 
+import com.eripe14.database.document.Document;
 import com.eripe14.houses.position.Position;
-import pl.craftcityrp.developerapi.data.DataBit;
 
-import java.util.Map;
-
-public class HouseCustomFurniture extends DataBit {
+public class HouseCustomFurniture implements Document {
 
     private final String namespacedId;
     private final Position position;
 
     public HouseCustomFurniture(String namespacedId, Position position) {
-        super(null);
         this.namespacedId = namespacedId;
         this.position = position;
     }
@@ -25,10 +22,7 @@ public class HouseCustomFurniture extends DataBit {
     }
 
     @Override
-    public Object asJson() {
-        return Map.of(
-                "namespacedId", this.namespacedId,
-                "position", this.position.asJson()
-        );
+    public Class<? extends Document> getType() {
+        return this.getClass();
     }
 }

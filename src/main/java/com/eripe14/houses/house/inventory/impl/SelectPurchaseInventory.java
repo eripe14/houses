@@ -47,8 +47,12 @@ public class SelectPurchaseInventory extends Inventory {
         this.scheduler.async(() -> {
             InventoryConfiguration.SelectPurchaseOption selectPurchaseOption = this.inventoryConfiguration.selectPurchaseOption;
 
+            Formatter formatter = new Formatter();
+            formatter.register("{HOUSE_ID}", house.getHouseId().replace("_", " "));
+            formatter.register("{BUY_PRICE}", house.getBuyPrice());
+
             Gui gui = Gui.gui()
-                    .title(Legacy.title(selectPurchaseOption.title))
+                    .title(Legacy.title(formatter.format(selectPurchaseOption.title)))
                     .rows(selectPurchaseOption.rows)
                     .disableAllInteractions()
                     .create();
@@ -57,12 +61,12 @@ public class SelectPurchaseInventory extends Inventory {
                 gui.getFiller().fill(selectPurchaseOption.filler.asGuiItem());
             }
 
-            Formatter formatter = new Formatter();
-            formatter.register("{HOUSE_ID}", house.getHouseId());
-            formatter.register("{BUY_PRICE}", house.getBuyPrice());
-
             this.setItem(gui, selectPurchaseOption.buyItem, event -> {
                 Consumer<UUID> confirm = (confirmPlayer) -> {
+                    if (house.getOwner().isPresent()) {
+                        return;
+                    }
+
                     if (this.housePurchaseService.purchaseHouse(player, house)) {
                         this.notificationAnnouncer.sendMessage(player, this.messageConfiguration.house.boughtHouse, formatter);
                         this.scheduler.sync(() -> this.housePurchaseService.killPurchaseFurniture(house));

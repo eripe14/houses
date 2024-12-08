@@ -61,7 +61,7 @@ public class SellHouseAction implements InventoryClickAction {
             formatter.register("{HOUSE_ID}", house.getHouseId());
 
             Consumer<UUID> confirmAction = (secondUuidVariable) -> {
-                if (house.getRegion().getType() == HouseType.APARTMENT) {
+                if (house.getRegion().getHouseType() == HouseType.APARTMENT) {
                     player.teleport(this.protectionService.getCenterOfRegion(this.protectionService.getRegion(house.getBlockOfFlatsId())));
                 } else {
                     player.teleport(PositionAdapter.convert(house.getRegion().getPurchaseFurniture().getPosition()));

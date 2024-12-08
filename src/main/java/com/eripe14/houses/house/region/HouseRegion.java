@@ -1,18 +1,21 @@
 package com.eripe14.houses.house.region;
 
+import com.eripe14.database.document.Document;
+import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import com.eripe14.houses.house.furniture.HouseCustomFurniture;
 import com.eripe14.houses.position.Position;
 import com.eripe14.houses.position.PositionAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import pl.craftcityrp.developerapi.data.DataBit;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class HouseRegion extends DataBit {
+public class HouseRegion implements Document {
 
     private final String houseId;
     private final String defaultSchematicName;
@@ -35,7 +38,6 @@ public class HouseRegion extends DataBit {
             ProtectedPolygonalRegion house,
             HouseCustomFurniture purchaseFurniture
     ) {
-        super(null);
         this.houseId = houseId;
         this.defaultSchematicName = defaultSchematicName;
         this.world = world;
@@ -59,7 +61,6 @@ public class HouseRegion extends DataBit {
             HouseCustomFurniture purchaseFurniture,
             String latestSchematicName
     ) {
-        super(null);
         this.houseId = houseId;
         this.defaultSchematicName = defaultSchematicName;
         this.world = world;
@@ -84,7 +85,6 @@ public class HouseRegion extends DataBit {
             Set<Position> placedFurnitureLocations,
             String latestSchematicName
     ) {
-        super(null);
         this.houseId = houseId;
         this.defaultSchematicName = defaultSchematicName;
         this.world = world;
@@ -109,7 +109,7 @@ public class HouseRegion extends DataBit {
         return this.world;
     }
 
-    public HouseType getType() {
+    public HouseType getHouseType() {
         return this.type;
     }
 
@@ -153,19 +153,18 @@ public class HouseRegion extends DataBit {
         this.latestSchematicName = latestSchematicName;
     }
 
+    public Location getHouseCenter() {
+        BlockVector3 minPoint = this.plot.getMinimumPoint();
+        BlockVector3 maxPoint = this.plot.getMaximumPoint();
+
+        int centerX = (minPoint.getX() + maxPoint.getX()) / 2;
+        int centerZ = (minPoint.getZ() + maxPoint.getZ()) / 2;
+
+        return new Location(this.world, centerX, Bukkit.getWorld(PluginConfiguration.HOUSES_WORLD_NAME).getHighestBlockYAt(centerX, centerZ), centerZ);
+    }
+
     @Override
-    public Object asJson() {
-        return Map.of(
-                "houseId", this.houseId,
-                "defaultSchematicName", this.defaultSchematicName,
-                "world", this.world.getName(),
-                "type", this.type,
-                "district", this.district,
-                "plot", this.plot.getId(),
-                "house", this.house.getId(),
-                "purchaseFurniture", this.purchaseFurniture.asJson(),
-                "placedFurnitureLocations", this.placedFurnitureLocations,
-                "latestSchematicName", this.latestSchematicName
-        );
+    public Class<? extends Document> getType() {
+        return this.getClass();
     }
 }

@@ -71,7 +71,7 @@ public class InventoryConfiguration implements ReloadableConfig {
 
     @Contextual
     public static class SelectPurchaseOption {
-        public String title = "&eWybierz opcję...";
+        public String title = "&eWybierz opcję... (Dom {HOUSE_ID})";
 
         public String confirmTitle = "&ePotwierdź zakup domu";
 
@@ -113,7 +113,7 @@ public class InventoryConfiguration implements ReloadableConfig {
 
     @Contextual
     public static class Rent {
-        public String title = "&eWynajmij dom";
+        public String title = "&eWynajmij dom {HOUSE_ID}";
 
         public String confirmTitle = "&ePotwierdź wynajem";
 
@@ -181,7 +181,7 @@ public class InventoryConfiguration implements ReloadableConfig {
                 5, "&cAnuluj", List.of("&7Kliknij aby anulować"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.REDSTONE_BLOCK, true
         );
 
-        public String confirmChangeOwnerTitle = "&ePotwierdź zmianę właściciela";
+        public String confirmChangeOwnerTitle = "&ePotwierdź zmianę właściciela ({HOUSE})";
 
         public ItemConfiguration buyHouseAdditionalItem = new ItemConfiguration(
                 4,
@@ -192,11 +192,20 @@ public class InventoryConfiguration implements ReloadableConfig {
                 true
         );
 
+        public ItemConfiguration changingOwnerAdditionalItem = new ItemConfiguration(
+                4,
+                "&eDom {HOUSE_ID}",
+                List.of("&7Kliknij aby zostać właścicielem domu &e{HOUSE_ID}. ({PREVIOUS_OWNER})"),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.CAMPFIRE,
+                true
+        );
+
         public String confirmBuyTitle = "&ePotwierdź zakup domu";
 
         public ItemConfiguration rentHouseAdditionalItem = new ItemConfiguration(
                 4,
-                "&eWynajem domu",
+                "&eWynajem domu {HOUSE_ID}",
                 List.of("&7Kliknij aby wynająć dom na &e{DAYS} &7dni za &e{PRICE}"),
                 List.of(ItemFlag.HIDE_ATTRIBUTES),
                 Material.HOPPER,
@@ -227,6 +236,7 @@ public class InventoryConfiguration implements ReloadableConfig {
                 4,
                 "&eWniosek o remont",
                 List.of(
+                        "&7Dom: &e{HOUSE_ID}",
                         "&7Typ remontu: &e{RENOVATION_TYPE}",
                         "&7Wniosek: &e{REQUEST}",
                         "&7Liczba dni trwania remontu: &e{DAYS} dni",
@@ -261,14 +271,24 @@ public class InventoryConfiguration implements ReloadableConfig {
                 false
         );
 
-        public String confirmJoinTitle = "&ePotwierdź dołączenie do domu";
+        public String confirmJoinTitle = "&ePotwierdź dołączenie do domu {HOUSE_ID}";
 
         public String confirmBecomeOwnerTitle = "&ePotwierdź chęć zostania właścicielem";
 
         public boolean fillEmptySlots = true;
 
         public ItemConfiguration filler = new ItemConfiguration(
-                0, "&8", List.of(), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BLACK_STAINED_GLASS_PANE, false);
+                0, "&8", List.of(), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.BLACK_STAINED_GLASS_PANE, false
+        );
+
+        public ItemConfiguration houseMemberJoin = new ItemConfiguration(
+                4,
+                "&eDołącz do domu gracza {INVITER}",
+                List.of("&7Kliknij aby dołączyć do domu gracza {INVITER} ({HOUSE_ID})"),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.CAMPFIRE,
+                true
+        );
     }
 
     @Contextual
@@ -486,7 +506,15 @@ public class InventoryConfiguration implements ReloadableConfig {
         public int rows = 1;
 
         public ItemConfiguration cancelRenovationBeforeTimeEnds = new ItemConfiguration(
-                4, "&eZakończ remont przed czasem {HOUSE_ID}", List.of("&7Kliknij aby zakończyć remont przed czasem"), List.of(ItemFlag.HIDE_ATTRIBUTES), Material.REDSTONE_BLOCK, true
+                4,
+                "&eZakończ remont przed czasem {HOUSE_ID}",
+                List.of(
+                        "&7Data rozpoczęcia: &e{DATE}",
+                        "&7Kliknij aby zakończyć remont przed czasem"
+                ),
+                List.of(ItemFlag.HIDE_ATTRIBUTES),
+                Material.REDSTONE_BLOCK,
+                true
         );
 
         public ItemConfiguration closeInventoryItem = new ItemConfiguration(

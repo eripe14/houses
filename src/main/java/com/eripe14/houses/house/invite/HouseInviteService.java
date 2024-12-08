@@ -4,7 +4,9 @@ import com.eripe14.houses.EventCaller;
 import com.eripe14.houses.configuration.implementation.PluginConfiguration;
 import net.jodah.expiringmap.ExpiringMap;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -12,6 +14,7 @@ public class HouseInviteService {
 
     private final EventCaller eventCaller;
     private final Map<UUID, Invite> invites;
+    private final Set<UUID> invitedPlayers = new HashSet<>();
 
     public HouseInviteService(EventCaller eventCaller, PluginConfiguration pluginConfiguration) {
         this.eventCaller = eventCaller;
@@ -36,7 +39,19 @@ public class HouseInviteService {
     }
 
     public boolean hasSentInvite(UUID player) {
-        return this.invites.get(player) != null;
+        return this.invites.containsKey(player);
+    }
+
+    public boolean isInvited(UUID player) {
+        return this.invitedPlayers.contains(player);
+    }
+
+    public void addInvitedPlayer(UUID player) {
+        this.invitedPlayers.add(player);
+    }
+
+    public void removeInvitedPlayer(UUID player) {
+        this.invitedPlayers.remove(player);
     }
 
 }

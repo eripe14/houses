@@ -1,5 +1,6 @@
 package com.eripe14.houses.house.region;
 
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -14,6 +15,8 @@ public interface RegionService {
     void killAllFurniture(HouseRegion houseRegion);
 
     CompletableFuture<FinalRegionResult> getRegions(Player player, String houseId, HouseDistrict houseDistrict, HouseType houseType);
+
+    CompletableFuture<FinalRegionResult> getApartmentRegion(Player player, String houseId, ProtectedRegion blockOfFlatsRegion, HouseDistrict houseDistrict);
 
     RegionResult getRegion(Player player, String regionName);
 

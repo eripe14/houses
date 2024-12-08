@@ -93,7 +93,8 @@ public class RemovePlayerAction implements InventoryClickAction {
                     player,
                     house,
                     this.inventoryConfiguration.removePlayer.title,
-                    removeConsumer
+                    removeConsumer,
+                    true
             );
         };
     }

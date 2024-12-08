@@ -63,7 +63,7 @@ public class RenovateAction implements InventoryClickAction {
                 return;
             }
 
-            if (house.getRegion().getType() == HouseType.APARTMENT) {
+            if (house.getRegion().getHouseType() == HouseType.APARTMENT) {
                 this.apartamentRenovationInventory.openInventory(player, house);
                 return;
             }
